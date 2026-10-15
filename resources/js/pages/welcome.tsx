@@ -26,36 +26,34 @@ export default function Welcome() {
                         LegalCloud <span className="text-royal">AI</span>
                     </div>
                     <nav className="flex items-center gap-3 text-sm">
+                        <a href="/app/login" className="rounded-full bg-royal px-4 py-2 font-semibold text-white">
+                            Frontend API-first
+                        </a>
                         {auth.user ? (
-                            <Link href={route('dashboard')} className="rounded-full bg-royal px-4 py-2 font-semibold text-white">
-                                Ir al panel
+                            <Link href={route('dashboard')} className="rounded-full px-4 py-2 text-navy hover:bg-ice">
+                                Panel Inertia
                             </Link>
                         ) : (
-                            <>
-                                <Link href={route('login')} className="rounded-full px-4 py-2 text-navy hover:bg-ice">
-                                    Iniciar sesión
-                                </Link>
-                                <Link href={route('register')} className="rounded-full bg-royal px-4 py-2 font-semibold text-white">
-                                    Crear cuenta
-                                </Link>
-                            </>
+                            <Link href={route('login')} className="rounded-full px-4 py-2 text-navy hover:bg-ice">
+                                Login Inertia
+                            </Link>
                         )}
                     </nav>
                 </header>
 
                 <section className="hero-grid mx-auto grid max-w-6xl gap-10 px-6 py-16 lg:grid-cols-2 lg:items-center">
                     <div>
-                        <p className="text-xs font-semibold tracking-[0.22em] text-royal uppercase">Mockup de plataforma cloud</p>
+                        <p className="text-xs font-semibold tracking-[0.22em] text-royal uppercase">Frontend API-first · OpenAPI v1</p>
                         <h1 className="font-display mt-3 text-4xl leading-tight font-bold md:text-5xl">Gestión documental inteligente para organizaciones jurídicas</h1>
                         <p className="mt-4 max-w-xl text-base text-slate-600">
-                            LegalCloud AI permite registrar expedientes, organizar documentos, controlar versiones y consultar el acervo en lenguaje
-                            natural. Esta versión es un ejemplo visual: el OCR y el RAG están simulados, sin un modelo de IA real.
+                            El cliente en /app consume únicamente /api/v1 según openapi/legalcloud-ai.v1.yaml: JWT, RBAC, expedientes,
+                            documentos, búsqueda, asistente RAG simulado, usuarios y auditoría. El OCR y el RAG no llaman a un modelo real.
                         </p>
                         <div className="mt-8 flex flex-wrap gap-3">
-                            <Link href={route('login')} className="inline-flex items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white">
-                                Ver el mockup
+                            <a href="/app/login" className="inline-flex items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white">
+                                Abrir frontend API
                                 <ArrowRight className="size-4" />
-                            </Link>
+                            </a>
                             <a href="#modulos" className="inline-flex items-center gap-2 rounded-full border border-mist bg-white px-5 py-2.5 text-sm font-semibold">
                                 Módulos
                             </a>
