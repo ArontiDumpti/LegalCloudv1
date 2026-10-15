@@ -45,7 +45,7 @@ export default function ExpedientesPage({ onError, puedeCrear }: { onError: (m: 
         <div className="grid gap-6">
             <div>
                 <h1 className="font-display text-3xl font-bold">Expedientes</h1>
-                <p className="text-sm text-slate-500">GET/POST /api/v1/expedientes</p>
+                <p className="text-sm text-slate-500">Registro y seguimiento de cada carpeta documental</p>
             </div>
             {puedeCrear && (
                 <form onSubmit={(e) => void crear(e)} className="grid gap-3 rounded-2xl border border-mist bg-white p-5 md:grid-cols-2">

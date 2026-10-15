@@ -11,7 +11,7 @@ export default function NotificacionesIndex({ notificaciones }: { notificaciones
             <div className="flex flex-1 flex-col gap-6 bg-gradient-to-b from-white to-ice p-4 md:p-6">
                 <div>
                     <h1 className="font-display text-3xl font-bold text-navy">Notificaciones</h1>
-                    <p className="text-sm text-muted-foreground">Avisos de carga, OCR y consultas sobre el acervo.</p>
+                    <p className="text-sm text-muted-foreground">Avisos de carga y consultas sobre el acervo.</p>
                 </div>
                 <ul className="space-y-3">
                     {notificaciones.map((item) => (

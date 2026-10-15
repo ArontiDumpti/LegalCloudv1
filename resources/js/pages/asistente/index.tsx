@@ -4,7 +4,7 @@ import { type BreadcrumbItem, type ConsultaRag } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Asistente RAG', href: '/asistente' }];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Asistente', href: '/asistente' }];
 
 interface Props {
     consultas: ConsultaRag[];
@@ -26,13 +26,11 @@ export default function AsistenteIndex({ consultas, sugeridas }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Asistente RAG" />
+            <Head title="Asistente" />
             <div className="flex flex-1 flex-col gap-6 bg-gradient-to-b from-white to-ice p-4 md:p-6">
                 <div>
-                    <h1 className="font-display text-3xl font-bold text-navy">Asistente RAG</h1>
-                    <p className="text-sm text-muted-foreground">
-                        Ejemplo de consulta sobre documentos indexados. No hay un LLM real: la respuesta se arma con coincidencias de texto y muestra fuentes.
-                    </p>
+                    <h1 className="font-display text-3xl font-bold text-navy">Asistente</h1>
+                    <p className="text-sm text-muted-foreground">Pregunte sobre los documentos indexados.</p>
                 </div>
 
                 <div className="flex flex-wrap gap-2">

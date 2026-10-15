@@ -45,4 +45,9 @@ class Documento extends Model
     {
         return $this->hasMany(DocumentoVersion::class)->orderByDesc('numero');
     }
+
+    public function fragmentos(): HasMany
+    {
+        return $this->hasMany(FragmentoVector::class);
+    }
 }

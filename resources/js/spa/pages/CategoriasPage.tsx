@@ -35,7 +35,7 @@ export default function CategoriasPage({ onError, puedeCrear }: { onError: (m: s
         <div className="grid gap-6">
             <div>
                 <h1 className="font-display text-3xl font-bold">Categorías</h1>
-                <p className="text-sm text-slate-500">GET/POST /api/v1/categorias</p>
+                <p className="text-sm text-slate-500">Clasificación de expedientes y documentos</p>
             </div>
             {puedeCrear && (
                 <form onSubmit={(e) => void crear(e)} className="grid gap-3 rounded-2xl border border-mist bg-white p-5 md:grid-cols-3">

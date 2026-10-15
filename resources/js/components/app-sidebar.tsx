@@ -25,7 +25,7 @@ const mainNavItems: NavItem[] = [
     { title: 'Categorías', url: '/categorias', icon: Tags },
     { title: 'Búsqueda', url: '/busqueda', icon: Search },
     { title: 'OCR', url: '/ocr', icon: ScanText },
-    { title: 'Asistente RAG', url: '/asistente', icon: MessageSquareText },
+    { title: 'Asistente', url: '/asistente', icon: MessageSquareText },
     { title: 'Notificaciones', url: '/notificaciones', icon: Bell },
     { title: 'Usuarios y roles', url: '/usuarios', icon: Users },
     { title: 'Auditoría', url: '/auditoria', icon: ShieldCheck },

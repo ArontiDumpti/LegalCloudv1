@@ -10,7 +10,7 @@ export default function DashboardPage({ perfil }: { perfil: Perfil }) {
     useEffect(() => {
         void api<Dashboard>('/dashboard').then(setData);
         if (perfil.permisos.includes('usuarios.leer')) {
-            void api<{ datos: Usuario[] }>('/usuarios').then((r) => setEquipo(r.datos));
+            void api<{ datos: Usuario[] }>('/usuarios?limite=6').then((r) => setEquipo(r.datos));
         }
     }, [perfil.permisos]);
 
@@ -23,7 +23,7 @@ export default function DashboardPage({ perfil }: { perfil: Perfil }) {
             <div>
                 <p className="text-xs font-semibold tracking-[0.2em] text-royal uppercase">LegalCloud AI</p>
                 <h1 className="font-display text-3xl font-bold">Panel de gestión documental</h1>
-                <p className="mt-1 text-sm text-slate-500">Datos en vivo desde GET /api/v1/dashboard</p>
+                <p className="mt-1 text-sm text-slate-500">Resumen de expedientes, documentos y actividad reciente</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {Object.entries(data.expedientesPorEstado).map(([estado, valor]) => (

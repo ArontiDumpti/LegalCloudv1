@@ -130,6 +130,32 @@ class AuthController extends Controller
         return LegalCloudApi::json($this->emitirTokens($user));
     }
 
+    public function registrar(Request $request): JsonResponse
+    {
+        $datos = $request->validate([
+            'nombre' => ['required', 'string', 'max:120'],
+            'apellido' => ['required', 'string', 'max:120'],
+            'correo' => ['required', 'email', 'unique:users,email'],
+            'contrasena' => ['required', 'string', 'min:8', 'max:128', 'same:contrasenaConfirmacion'],
+            'contrasenaConfirmacion' => ['required', 'string', 'min:8', 'max:128'],
+        ]);
+
+        $user = User::create([
+            'name' => trim($datos['nombre'].' '.$datos['apellido']),
+            'email' => $datos['correo'],
+            'password' => Hash::make($datos['contrasena']),
+            'role' => 'consultor',
+            'cargo' => 'Usuario consultor',
+            'activo' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        auth()->setUser($user);
+        AuditoriaLogger::registrar('auth.registrar', 'auth', 'Alta de cuenta '.$user->email);
+
+        return LegalCloudApi::json($this->emitirTokens($user), 201);
+    }
+
     public function recuperarContrasena(Request $request): JsonResponse
     {
         $request->validate(['correo' => ['required', 'email']]);

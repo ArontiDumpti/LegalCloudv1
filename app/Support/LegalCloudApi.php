@@ -96,6 +96,27 @@ class LegalCloudApi
         ];
     }
 
+    /**
+     * @param  Collection<int, mixed>|array<int, mixed>  $datos
+     * @return array{datos: list<mixed>, paginacion: array{limit: int, pagina: int, total: int, paginas: int, nextCursor: string|null}}
+     */
+    public static function paginaNumerada(Collection|array $datos, int $pagina, int $limit, int $total): array
+    {
+        $items = $datos instanceof Collection ? $datos->values()->all() : array_values($datos);
+        $paginas = max(1, (int) ceil($total / max($limit, 1)));
+
+        return [
+            'datos' => $items,
+            'paginacion' => [
+                'limit' => $limit,
+                'pagina' => $pagina,
+                'total' => $total,
+                'paginas' => $paginas,
+                'nextCursor' => $pagina < $paginas ? (string) ($pagina + 1) : null,
+            ],
+        ];
+    }
+
     public static function problema(int $status, string $title, string $detail, ?array $errors = null): JsonResponse
     {
         $cuerpo = [

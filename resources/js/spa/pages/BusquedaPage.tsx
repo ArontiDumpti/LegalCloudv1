@@ -12,7 +12,7 @@ export default function BusquedaPage({ onError }: { onError: (m: string) => void
         try {
             const data = await api<ResultadoBusqueda>('/busquedas', {
                 method: 'POST',
-                body: JSON.stringify({ consulta, modo: 'hibrida', limite: 10 }),
+                body: JSON.stringify({ consulta, modo: 'semantica', limite: 10 }),
             });
             setResultado(data);
         } catch (e) {
@@ -24,7 +24,7 @@ export default function BusquedaPage({ onError }: { onError: (m: string) => void
         <div className="grid gap-6">
             <div>
                 <h1 className="font-display text-3xl font-bold">Búsqueda</h1>
-                <p className="text-sm text-slate-500">POST /api/v1/busquedas — evidencia persistida</p>
+                <p className="text-sm text-slate-500">Busque en el acervo documental</p>
             </div>
             <form onSubmit={(e) => void buscar(e)} className="flex gap-3">
                 <input className="h-11 flex-1 rounded-xl border px-3" value={consulta} onChange={(e) => setConsulta(e.target.value)} />

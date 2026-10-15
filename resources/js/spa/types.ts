@@ -23,7 +23,7 @@ export type Perfil = {
 
 export type Paginacion<T> = {
     datos: T[];
-    paginacion: { limit: number; nextCursor: string | null };
+    paginacion: { limit: number; nextCursor: string | null; pagina?: number; total?: number; paginas?: number };
 };
 
 export type Expediente = {
@@ -113,7 +113,7 @@ export type Mensaje = {
     pregunta: string;
     respuesta: string;
     respuestaSustentada: boolean;
-    fuentes: Array<{ titulo: string; fragmento: string; puntaje?: number }>;
+    fuentes: Array<{ titulo: string; fragmento: string; puntaje?: number; documentoId?: string | null }>;
     creadoEn: string;
 };
 

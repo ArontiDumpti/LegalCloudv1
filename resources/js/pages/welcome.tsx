@@ -1,17 +1,14 @@
-import { type SharedData } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import { ArrowRight, FileSearch, FolderOpen, MessageSquareText, ScanText, ShieldCheck } from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { ArrowRight, FileText, FolderOpen, MessageSquareText, ShieldCheck } from 'lucide-react';
 
 const modules = [
-    { title: 'Expedientes', copy: 'Registre, clasifique y siga el estado de cada carpeta.', icon: FolderOpen },
-    { title: 'OCR (demo)', copy: 'El texto se extrae de forma simulada para mostrar el flujo.', icon: ScanText },
-    { title: 'Asistente RAG', copy: 'Pregunte en lenguaje natural y vea las fuentes recuperadas.', icon: MessageSquareText },
-    { title: 'Auditoría', copy: 'Trazabilidad de documentos, consultas y operaciones.', icon: ShieldCheck },
+    { title: 'Expedientes', copy: 'Abra, clasifique y dé seguimiento a cada carpeta de trámite.', icon: FolderOpen },
+    { title: 'Documentos', copy: 'Cargue archivos, controle versiones y consulte el texto extraído.', icon: FileText },
+    { title: 'Asistente', copy: 'Pregunte en lenguaje natural y vea las fuentes de los documentos.', icon: MessageSquareText },
+    { title: 'Auditoría', copy: 'Revise quién consultó, cargó o cambió un documento.', icon: ShieldCheck },
 ];
 
 export default function Welcome() {
-    const { auth } = usePage<SharedData>().props;
-
     return (
         <>
             <Head title="LegalCloud AI">
@@ -19,73 +16,129 @@ export default function Welcome() {
                 <link href="https://fonts.bunny.net/css?family=dm-sans:400,500,600,700|source-serif-4:600,700" rel="stylesheet" />
             </Head>
 
-            <div className="min-h-screen bg-gradient-to-b from-white via-ice to-white text-navy">
-                <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-                    <div className="flex items-center gap-2 font-semibold">
-                        <span className="flex size-9 items-center justify-center rounded-lg bg-navy text-sm text-white">LC</span>
-                        LegalCloud <span className="text-royal">AI</span>
-                    </div>
-                    <nav className="flex items-center gap-3 text-sm">
-                        <a href="/app/login" className="rounded-full bg-royal px-4 py-2 font-semibold text-white">
-                            Frontend API-first
+            <div className="min-h-screen bg-ice text-navy">
+                <header className="sticky top-0 z-10 border-b border-mist/80 bg-white/90 backdrop-blur">
+                    <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
+                        <div className="flex items-center gap-2.5">
+                            <span className="flex size-10 items-center justify-center rounded-lg bg-navy text-sm font-semibold text-white">LC</span>
+                            <div>
+                                <p className="text-base leading-none font-semibold">
+                                    LegalCloud <span className="text-royal">AI</span>
+                                </p>
+                                <p className="mt-0.5 text-xs text-slate-500">Gestión documental</p>
+                            </div>
+                        </div>
+                        <a
+                            href="/app/login"
+                            className="inline-flex items-center gap-2 rounded-xl bg-royal px-6 py-3 text-base font-bold text-white shadow-lg shadow-sky/40 hover:bg-navy"
+                        >
+                            Iniciar sesión
+                            <ArrowRight className="size-5" />
                         </a>
-                        {auth.user ? (
-                            <Link href={route('dashboard')} className="rounded-full px-4 py-2 text-navy hover:bg-ice">
-                                Panel Inertia
-                            </Link>
-                        ) : (
-                            <Link href={route('login')} className="rounded-full px-4 py-2 text-navy hover:bg-ice">
-                                Login Inertia
-                            </Link>
-                        )}
-                    </nav>
+                    </div>
                 </header>
 
-                <section className="hero-grid mx-auto grid max-w-6xl gap-10 px-6 py-16 lg:grid-cols-2 lg:items-center">
-                    <div>
-                        <p className="text-xs font-semibold tracking-[0.22em] text-royal uppercase">Frontend API-first · OpenAPI v1</p>
-                        <h1 className="font-display mt-3 text-4xl leading-tight font-bold md:text-5xl">Gestión documental inteligente para organizaciones jurídicas</h1>
-                        <p className="mt-4 max-w-xl text-base text-slate-600">
-                            El cliente en /app consume únicamente /api/v1 según openapi/legalcloud-ai.v1.yaml: JWT, RBAC, expedientes,
-                            documentos, búsqueda, asistente RAG simulado, usuarios y auditoría. El OCR y el RAG no llaman a un modelo real.
-                        </p>
-                        <div className="mt-8 flex flex-wrap gap-3">
-                            <a href="/app/login" className="inline-flex items-center gap-2 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white">
-                                Abrir frontend API
-                                <ArrowRight className="size-4" />
-                            </a>
-                            <a href="#modulos" className="inline-flex items-center gap-2 rounded-full border border-mist bg-white px-5 py-2.5 text-sm font-semibold">
-                                Módulos
-                            </a>
+                <main className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+                    <section className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+                        <div>
+                            <p className="text-xs font-semibold tracking-[0.18em] text-royal uppercase">Organizaciones jurídicas y administrativas</p>
+                            <h1 className="font-display mt-3 text-4xl leading-[1.15] font-bold md:text-5xl">
+                                Una sola plataforma para el acervo documental
+                            </h1>
+                            <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-600">
+                                Administre expedientes, documentos y consultas con control de usuarios. El asistente responde con base en los documentos
+                                indexados.
+                            </p>
+                            <div className="mt-8">
+                                <a href="#modulos" className="inline-flex items-center rounded-lg border border-mist bg-white px-5 py-2.5 text-sm font-semibold hover:border-sky">
+                                    Ver módulos
+                                </a>
+                            </div>
+                            <dl className="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-mist pt-6">
+                                <div>
+                                    <dt className="text-xs text-slate-500">Expedientes</dt>
+                                    <dd className="font-display text-2xl font-bold">Centralizados</dd>
+                                </div>
+                                <div>
+                                    <dt className="text-xs text-slate-500">Consultas</dt>
+                                    <dd className="font-display text-2xl font-bold">Con fuentes</dd>
+                                </div>
+                                <div>
+                                    <dt className="text-xs text-slate-500">Acceso</dt>
+                                    <dd className="font-display text-2xl font-bold">Por roles</dd>
+                                </div>
+                            </dl>
                         </div>
-                        <p className="mt-4 text-xs text-slate-500">Demo: consultor@legalcloud.com / password</p>
-                    </div>
-                    <article className="rounded-3xl border border-mist bg-white p-6 shadow-xl shadow-sky/10">
-                        <p className="text-xs font-semibold tracking-wide text-royal uppercase">Pregunta de ejemplo</p>
-                        <p className="mt-3 rounded-2xl bg-ice px-4 py-3 text-sm">¿Cuáles son los requisitos establecidos para realizar determinado procedimiento?</p>
-                        <p className="mt-4 text-sm leading-relaxed text-slate-600">
-                            El asistente recupera el <strong>Reglamento General de Trámites Administrativos (RES-2024-0187)</strong> y lista los siete
-                            requisitos del artículo 12, mostrando las fuentes que sustentan la respuesta.
-                        </p>
-                        <div className="mt-5 flex items-center gap-2 text-xs text-royal">
-                            <FileSearch className="size-4" />
-                            Fuente: EXP-2024-0187 · DOC-RES-2024-0187
-                        </div>
-                    </article>
-                </section>
 
-                <section id="modulos" className="mx-auto max-w-6xl px-6 pb-20">
-                    <h2 className="font-display text-2xl font-bold">Módulos principales</h2>
-                    <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        {modules.map((modulo) => (
-                            <article key={modulo.title} className="rounded-2xl border border-mist bg-white p-5">
-                                <modulo.icon className="size-5 text-royal" />
-                                <h3 className="mt-3 font-semibold">{modulo.title}</h3>
-                                <p className="mt-1 text-sm text-slate-600">{modulo.copy}</p>
-                            </article>
-                        ))}
+                        <div className="overflow-hidden rounded-2xl border border-mist bg-white shadow-xl shadow-sky/15">
+                            <div className="flex items-center gap-2 border-b border-mist bg-slate-50 px-4 py-2.5">
+                                <span className="size-2.5 rounded-full bg-mist" />
+                                <span className="size-2.5 rounded-full bg-mist" />
+                                <span className="size-2.5 rounded-full bg-mist" />
+                                <span className="ml-2 text-xs text-slate-500">LegalCloud AI</span>
+                            </div>
+                            <div className="grid grid-cols-[7.5rem_1fr] md:grid-cols-[9rem_1fr]">
+                                <aside className="space-y-1 border-r border-mist bg-slate-50 p-3 text-[11px]">
+                                    {['Tablero', 'Expedientes', 'Documentos', 'Asistente', 'Auditoría'].map((item, i) => (
+                                        <p
+                                            key={item}
+                                            className={`rounded-md px-2 py-1.5 ${i === 0 ? 'bg-white font-semibold text-royal shadow-sm' : 'text-slate-500'}`}
+                                        >
+                                            {item}
+                                        </p>
+                                    ))}
+                                </aside>
+                                <div className="space-y-3 p-4">
+                                    <p className="text-xs font-semibold text-slate-500">Tablero</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {[
+                                            ['Expedientes', '2'],
+                                            ['Documentos', '5'],
+                                            ['Consultas', '3'],
+                                            ['Alertas', '2'],
+                                        ].map(([label, value]) => (
+                                            <div key={label} className="rounded-xl border border-mist px-3 py-2">
+                                                <p className="text-[10px] text-slate-500">{label}</p>
+                                                <p className="font-display text-xl font-bold">{value}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="rounded-xl bg-ice px-3 py-3">
+                                        <p className="text-[11px] font-semibold text-royal">Asistente</p>
+                                        <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                                            ¿Cuáles son los requisitos para iniciar un procedimiento administrativo?
+                                        </p>
+                                        <p className="mt-2 text-[11px] text-slate-500">Respuesta con fuentes · RES-2024-0187</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="modulos" className="mt-16 pb-8">
+                        <div className="max-w-2xl">
+                            <h2 className="font-display text-2xl font-bold">Qué puede hacer en LegalCloud</h2>
+                            <p className="mt-2 text-sm text-slate-600">Los módulos principales de la aplicación, con acceso según el rol de cada usuario.</p>
+                        </div>
+                        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            {modules.map((modulo) => (
+                                <article key={modulo.title} className="rounded-2xl border border-mist bg-white p-5 shadow-sm">
+                                    <span className="flex size-10 items-center justify-center rounded-xl bg-ice text-royal">
+                                        <modulo.icon className="size-5" />
+                                    </span>
+                                    <h3 className="mt-4 font-semibold">{modulo.title}</h3>
+                                    <p className="mt-1 text-sm leading-relaxed text-slate-600">{modulo.copy}</p>
+                                </article>
+                            ))}
+                        </div>
+                    </section>
+                </main>
+
+                <footer className="border-t border-mist bg-white">
+                    <div className="mx-auto flex max-w-6xl items-center px-6 py-5 text-xs text-slate-500">
+                        <span>LegalCloud AI</span>
                     </div>
-                </section>
+                </footer>
             </div>
         </>
     );

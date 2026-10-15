@@ -49,5 +49,41 @@ test('el administrador puede listar usuarios por la api', function () {
     $this->withToken($token)
         ->getJson('/api/v1/usuarios')
         ->assertOk()
-        ->assertJsonStructure(['datos', 'paginacion']);
+        ->assertJsonStructure(['datos', 'paginacion' => ['limit', 'pagina', 'total', 'paginas']]);
+
+    $this->withToken($token)
+        ->getJson('/api/v1/usuarios?q=admin&limite=5&pagina=1')
+        ->assertOk()
+        ->assertJsonPath('paginacion.limit', 5);
+});
+
+test('el administrador puede cargar un pdf y aparece en el expediente', function () {
+    $this->seed(LegalCloudSeeder::class);
+
+    $token = $this->postJson('/api/v1/auth/iniciar-sesion', [
+        'correo' => 'admin@legalcloud.com',
+        'contrasena' => 'password',
+    ])->json('accessToken');
+
+    $expedienteId = $this->withToken($token)
+        ->getJson('/api/v1/expedientes')
+        ->assertOk()
+        ->json('datos.0.id');
+
+    $pdf = "%PDF-1.1\nstream\n(Texto de prueba del reglamento municipal) Tj\nendstream\n%%EOF";
+    $archivo = Illuminate\Http\UploadedFile::fake()->createWithContent('norma.pdf', $pdf);
+
+    $this->withToken($token)
+        ->post("/api/v1/expedientes/{$expedienteId}/documentos/archivo", [
+            'titulo' => 'Norma de prueba',
+            'tipo' => 'reglamento',
+            'archivo' => $archivo,
+        ], ['Accept' => 'application/json'])
+        ->assertCreated()
+        ->assertJsonPath('titulo', 'Norma de prueba');
+
+    $this->withToken($token)
+        ->getJson("/api/v1/expedientes/{$expedienteId}/documentos")
+        ->assertOk()
+        ->assertJsonFragment(['titulo' => 'Norma de prueba']);
 });

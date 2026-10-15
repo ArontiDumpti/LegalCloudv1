@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Auditoria;
 use App\Models\ConsultaRag;
 use App\Models\Documento;
 use App\Models\Expediente;
@@ -28,7 +27,6 @@ class DashboardController extends Controller
             'expedientes' => Expediente::with(['categoria', 'responsable'])->latest()->limit(5)->get(),
             'documentos' => Documento::with(['expediente', 'categoria'])->latest()->limit(5)->get(),
             'consultas' => ConsultaRag::with('user')->latest()->limit(4)->get(),
-            'auditorias' => Auditoria::with('user')->latest()->limit(6)->get(),
             'equipo' => User::query()->where('activo', true)->orderBy('name')->get(['id', 'name', 'email', 'role', 'cargo']),
         ]);
     }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConsultaRag;
-use App\Services\MockRagService;
+use App\Services\MsRagService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,7 +29,7 @@ class AsistenteController extends Controller
         ]);
     }
 
-    public function store(Request $request, MockRagService $rag): RedirectResponse
+    public function store(Request $request, MsRagService $rag): RedirectResponse
     {
         $datos = $request->validate([
             'pregunta' => ['required', 'string', 'max:1000'],

@@ -68,14 +68,21 @@ class PdfSimple
             return trim($binario);
         }
 
-        preg_match_all('/\((?:\\\\.|[^\\\\)])*\)\s*Tj/', $binario, $coincidencias);
+        preg_match_all('/\((?:\\\\.|[^\\\\)])*\)\s*T[jJ]/', $binario, $coincidencias);
         $lineas = [];
 
         foreach ($coincidencias[0] as $pieza) {
-            if (! preg_match('/^\((.*)\)\s*Tj$/', $pieza, $partes)) {
+            if (! preg_match('/^\((.*)\)\s*T[jJ]$/', $pieza, $partes)) {
                 continue;
             }
             $lineas[] = self::desescapar($partes[1]);
+        }
+
+        if ($lineas === []) {
+            preg_match_all('/\((?:\\\\.|[^\\\\)]){3,}\)/', $binario, $textos);
+            foreach ($textos[0] as $pieza) {
+                $lineas[] = self::desescapar(substr($pieza, 1, -1));
+            }
         }
 
         $texto = trim(implode("\n", $lineas));

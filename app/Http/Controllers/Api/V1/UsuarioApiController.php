@@ -19,12 +19,45 @@ class UsuarioApiController extends Controller
         LegalCloudApi::exigeSinConsultor($request->user());
         LegalCloudApi::exige($request->user(), 'usuarios.leer');
 
-        $usuarios = User::query()
-            ->orderBy('name')
+        $q = trim((string) $request->query('q', ''));
+        $rol = (string) $request->query('rol', '');
+        $estado = (string) $request->query('estado', '');
+        $limite = min(max((int) $request->query('limite', 10), 5), 50);
+        $pagina = max((int) $request->query('pagina', 1), 1);
+
+        $consulta = User::query()->orderBy('name');
+
+        if ($q !== '') {
+            $consulta->where(function ($inner) use ($q) {
+                $inner->where('name', 'like', '%'.$q.'%')
+                    ->orWhere('email', 'like', '%'.$q.'%');
+            });
+        }
+
+        if ($rol !== '') {
+            $clave = LegalCloudApi::claveDesdeCodigo($rol);
+            if ($clave) {
+                $consulta->where('role', $clave);
+            }
+        }
+
+        if ($estado === 'activo') {
+            $consulta->where('activo', true);
+        } elseif (in_array($estado, ['suspendido', 'inactivo'], true)) {
+            $consulta->where('activo', false);
+        }
+
+        $total = (clone $consulta)->count();
+        $paginas = max(1, (int) ceil($total / $limite));
+        $pagina = min($pagina, $paginas);
+
+        $usuarios = $consulta
+            ->skip(($pagina - 1) * $limite)
+            ->take($limite)
             ->get()
             ->map(fn (User $user) => LegalCloudApi::usuario($user));
 
-        return LegalCloudApi::json(LegalCloudApi::pagina($usuarios));
+        return LegalCloudApi::json(LegalCloudApi::paginaNumerada($usuarios, $pagina, $limite, $total));
     }
 
     public function store(Request $request): JsonResponse

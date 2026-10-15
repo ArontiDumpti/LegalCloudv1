@@ -31,6 +31,9 @@ export default function App() {
     const [perfil, setPerfil] = useState<Perfil | null>(null);
     const [cargando, setCargando] = useState(Boolean(leerTokens()));
     const [alerta, setAlerta] = useState<string | null>(null);
+    const [confirmarSalida, setConfirmarSalida] = useState(false);
+    const [cerrando, setCerrando] = useState(false);
+    const [avisoLogin, setAvisoLogin] = useState<string | null>(null);
 
     useEffect(() => {
         const sync = () => setPath(rutaActual());
@@ -77,7 +80,13 @@ export default function App() {
     const publico = path === '/' || path === '/login';
 
     if (cargando) {
-        return <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">Cargando LegalCloud…</div>;
+        return (
+            <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-ice text-navy">
+                <span className="flex size-12 items-center justify-center rounded-xl bg-navy text-lg font-semibold text-white">LC</span>
+                <p className="text-sm font-semibold">LegalCloud AI</p>
+                <p className="text-xs text-slate-500">Cargando…</p>
+            </div>
+        );
     }
 
     if (!perfil && !publico && path !== '/login') {
@@ -87,10 +96,12 @@ export default function App() {
     if (!perfil) {
         return (
             <LoginPage
+                aviso={avisoLogin}
                 onSesion={async (token) => {
                     guardarTokens(token);
                     const yo = await api<Perfil>('/auth/yo');
                     setPerfil(yo);
+                    setAvisoLogin(null);
                     ir('/dashboard');
                 }}
             />
@@ -98,10 +109,11 @@ export default function App() {
     }
 
     const partes = path.split('/').filter(Boolean);
-    const seccion = partes[0] || 'dashboard';
+    const seccion = partes[0] === 'arquitectura' ? 'dashboard' : partes[0] || 'dashboard';
     const id = partes[1];
 
     async function salir() {
+        setCerrando(true);
         try {
             await api('/auth/cerrar-sesion', { method: 'POST' });
         } catch {
@@ -109,8 +121,13 @@ export default function App() {
         }
         guardarTokens(null);
         setPerfil(null);
+        setConfirmarSalida(false);
+        setCerrando(false);
+        setAvisoLogin('Su sesión se cerró correctamente. Ingrese de nuevo cuando quiera continuar.');
         ir('/login');
     }
+
+    const iniciales = `${perfil.nombre.charAt(0)}${(perfil.apellido ?? '').charAt(0)}`.toUpperCase();
 
     return (
         <div className="min-h-screen lg:grid lg:grid-cols-[260px_1fr]">
@@ -121,7 +138,7 @@ export default function App() {
                         <p className="font-semibold">
                             LegalCloud <span className="text-royal">AI</span>
                         </p>
-                        <p className="text-[11px] tracking-wide text-royal uppercase">Frontend API-first</p>
+                        <p className="text-[11px] tracking-wide text-royal uppercase">Gestión documental</p>
                     </div>
                 </div>
                 <nav className="grid gap-1 px-3 pb-4">
@@ -140,16 +157,68 @@ export default function App() {
                         );
                     })}
                 </nav>
-                <div className="border-t border-mist px-5 py-4 text-xs text-slate-500">
-                    <p className="font-semibold text-navy">
-                        {perfil.nombre} {perfil.apellido}
-                    </p>
-                    <p>{perfil.roles[0]?.nombre}</p>
-                    <button type="button" onClick={() => void salir()} className="mt-3 inline-flex items-center gap-1 text-royal">
-                        <LogOut className="size-3.5" /> Cerrar sesión
-                    </button>
+                <div className="border-t border-mist px-4 py-4">
+                    <div className="rounded-2xl bg-ice px-3 py-3">
+                        <div className="flex items-center gap-3">
+                            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white">
+                                {iniciales}
+                            </span>
+                            <div className="min-w-0">
+                                <p className="truncate text-sm font-semibold text-navy">
+                                    {perfil.nombre} {perfil.apellido}
+                                </p>
+                                <p className="truncate text-xs text-slate-500">{perfil.roles[0]?.nombre}</p>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setConfirmarSalida(true)}
+                            className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-mist bg-white text-sm font-semibold text-navy hover:border-sky hover:bg-white"
+                        >
+                            <LogOut className="size-4 text-royal" />
+                            Cerrar sesión
+                        </button>
+                    </div>
                 </div>
             </aside>
+            {confirmarSalida && (
+                <div className="fixed inset-0 z-50 grid place-items-center bg-navy/40 p-4">
+                    <div className="w-full max-w-md rounded-2xl border border-mist bg-white p-6 shadow-xl">
+                        <div className="flex items-center gap-3">
+                            <span className="flex size-11 items-center justify-center rounded-full bg-ice text-royal">
+                                <LogOut className="size-5" />
+                            </span>
+                            <div>
+                                <h2 className="font-display text-xl font-bold">¿Cerrar sesión?</h2>
+                                <p className="text-sm text-slate-500">
+                                    {perfil.nombre} {perfil.apellido}
+                                </p>
+                            </div>
+                        </div>
+                        <p className="mt-4 text-sm leading-relaxed text-slate-600">
+                            Se cerrará la sesión de {perfil.correo}. Podrá volver a entrar con su correo y contraseña.
+                        </p>
+                        <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                            <button
+                                type="button"
+                                disabled={cerrando}
+                                onClick={() => setConfirmarSalida(false)}
+                                className="h-11 rounded-xl border border-mist text-sm font-semibold text-navy hover:bg-ice"
+                            >
+                                Seguir en la cuenta
+                            </button>
+                            <button
+                                type="button"
+                                disabled={cerrando}
+                                onClick={() => void salir()}
+                                className="h-11 rounded-xl bg-navy text-sm font-semibold text-white disabled:opacity-60"
+                            >
+                                {cerrando ? 'Cerrando…' : 'Cerrar sesión'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <main className="min-w-0 p-4 md:p-8">
                 {alerta && (
                     <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
@@ -162,7 +231,7 @@ export default function App() {
                 {seccion === 'dashboard' && <DashboardPage perfil={perfil} />}
                 {seccion === 'expedientes' && !id && <ExpedientesPage onError={setAlerta} puedeCrear={puede(perfil, 'expedientes.crear')} />}
                 {seccion === 'expedientes' && id && <ExpedienteDetallePage id={id} onError={setAlerta} perfil={perfil} />}
-                {seccion === 'documentos' && !id && <DocumentosPage onError={setAlerta} />}
+                {seccion === 'documentos' && !id && <DocumentosPage onError={setAlerta} perfil={perfil} />}
                 {seccion === 'documentos' && id && <DocumentoDetallePage id={id} onError={setAlerta} perfil={perfil} />}
                 {seccion === 'categorias' && <CategoriasPage onError={setAlerta} puedeCrear={puede(perfil, 'categorias.crear')} />}
                 {seccion === 'busqueda' && <BusquedaPage onError={setAlerta} />}

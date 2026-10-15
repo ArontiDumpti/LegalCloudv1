@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ArquitecturaLegalController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DocumentoApiController;
 use App\Http\Controllers\Api\V1\ExpedienteApiController;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::get('/salud', [OrganizacionController::class, 'salud']);
     Route::post('/auth/iniciar-sesion', [AuthController::class, 'iniciarSesion']);
+    Route::post('/auth/registrar', [AuthController::class, 'registrar']);
     Route::post('/auth/renovar', [AuthController::class, 'renovar']);
     Route::post('/auth/aceptar-invitacion', [AuthController::class, 'aceptarInvitacion']);
     Route::post('/auth/recuperar-contrasena', [AuthController::class, 'recuperarContrasena']);
@@ -52,6 +54,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/expedientes/{expedienteId}/participantes/{usuarioId}', [ExpedienteApiController::class, 'quitarParticipante']);
         Route::get('/expedientes/{expedienteId}/trazabilidad', [ExpedienteApiController::class, 'trazabilidad']);
         Route::get('/expedientes/{expedienteId}/documentos', [ExpedienteApiController::class, 'documentos']);
+        Route::post('/expedientes/{expedienteId}/documentos/archivo', [DocumentoApiController::class, 'subirDirecto']);
         Route::post('/expedientes/{expedienteId}/documentos', [DocumentoApiController::class, 'iniciar']);
 
         Route::get('/documentos/{documentoId}', [DocumentoApiController::class, 'show']);
@@ -74,6 +77,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/conversaciones', [InteligenciaApiController::class, 'crearConversacion']);
         Route::get('/conversaciones/{conversacionId}', [InteligenciaApiController::class, 'obtenerConversacion']);
         Route::post('/conversaciones/{conversacionId}/mensajes', [InteligenciaApiController::class, 'crearMensaje']);
+
+        Route::post('/ingestions', [ArquitecturaLegalController::class, 'ingestions']);
+        Route::post('/queries', [ArquitecturaLegalController::class, 'queries']);
 
         Route::post('/resumenes', [InteligenciaApiController::class, 'crearResumen']);
         Route::get('/resumenes/{resumenId}', [InteligenciaApiController::class, 'obtenerResumen']);

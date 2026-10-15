@@ -26,7 +26,7 @@ export default function PerfilPage({ perfil, onError }: { perfil: Perfil; onErro
         <div className="grid gap-6">
             <div>
                 <h1 className="font-display text-3xl font-bold">Mi perfil</h1>
-                <p className="text-sm text-slate-500">GET /api/v1/auth/yo</p>
+                <p className="text-sm text-slate-500">Datos de su cuenta</p>
             </div>
             <article className="rounded-2xl border border-mist bg-white p-5">
                 <p className="font-semibold">
@@ -38,8 +38,6 @@ export default function PerfilPage({ perfil, onError }: { perfil: Perfil; onErro
                         <span key={r.id}>{badge(r.nombre)}</span>
                     ))}
                 </div>
-                <p className="mt-4 text-xs font-semibold text-royal">Permisos del token</p>
-                <p className="mt-1 text-xs text-slate-600">{perfil.permisos.join(' · ')}</p>
             </article>
             <form onSubmit={(e) => void cambiar(e)} className="grid max-w-md gap-3 rounded-2xl border border-mist bg-white p-5">
                 <h2 className="font-semibold">Cambiar contraseña</h2>

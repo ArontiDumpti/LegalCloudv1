@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Documento;
 use App\Models\DocumentoVersion;
 use App\Models\Expediente;
+use App\Services\IngestionService;
 use App\Support\AuditoriaLogger;
 use App\Support\LegalCloudApi;
 use App\Support\PdfSimple;
@@ -83,6 +84,62 @@ class DocumentoApiController extends Controller
                 ],
             ],
         ], 201);
+    }
+
+    public function subirDirecto(Request $request, string $expedienteId, IngestionService $ingesta): JsonResponse
+    {
+        LegalCloudApi::exige($request->user(), 'documentos.crear');
+
+        $datos = $request->validate([
+            'titulo' => ['nullable', 'string', 'max:240'],
+            'tipo' => ['required', 'string'],
+            'archivo' => ['required', 'file', 'max:20480'],
+        ]);
+
+        $expediente = Expediente::query()->findOrFail(LegalCloudApi::parseId($expedienteId));
+        $archivo = $request->file('archivo');
+        $binario = file_get_contents($archivo->getRealPath()) ?: '';
+        $texto = trim(PdfSimple::extraer($binario));
+
+        $codigo = 'DOC-'.now()->format('YmdHis').'-'.strtoupper(Str::random(3));
+        $extension = strtolower($archivo->getClientOriginalExtension() ?: 'pdf');
+        $ruta = 'documentos/'.Str::slug($codigo).'.'.$extension;
+        Storage::disk('public')->put($ruta, $binario);
+
+        $documento = Documento::create([
+            'expediente_id' => $expediente->id,
+            'categoria_id' => $expediente->categoria_id,
+            'codigo' => $codigo,
+            'titulo' => $datos['titulo'] ?: pathinfo($archivo->getClientOriginalName(), PATHINFO_FILENAME),
+            'tipo' => $datos['tipo'],
+            'archivo_nombre' => $archivo->getClientOriginalName(),
+            'archivo_ruta' => $ruta,
+            'mime' => $archivo->getMimeType() ?: 'application/pdf',
+            'tamano' => strlen($binario),
+            'version_actual' => 1,
+            'ocr_estado' => $texto !== '' ? 'procesado' : 'pendiente',
+            'contenido_ocr' => $texto !== '' ? $texto : null,
+            'embedding_estado' => $texto !== '' ? 'en_indexacion' : 'pendiente',
+            'subido_por' => $request->user()->id,
+        ]);
+
+        DocumentoVersion::create([
+            'documento_id' => $documento->id,
+            'numero' => 1,
+            'resumen_cambios' => 'Carga de PDF.',
+            'contenido' => $texto !== '' ? $texto : null,
+            'subido_por' => $request->user()->id,
+        ]);
+
+        try {
+            $ingesta->procesar($documento->fresh());
+        } catch (\Throwable) {
+            // El archivo ya quedó guardado aunque el índice falle.
+        }
+
+        AuditoriaLogger::registrar('documento.subir', 'documentos', $documento->codigo);
+
+        return LegalCloudApi::json(LegalCloudApi::documento($documento->fresh()), 201);
     }
 
     public function recibirCarga(Request $request, string $token): Response
@@ -179,7 +236,7 @@ class DocumentoApiController extends Controller
         return LegalCloudApi::json(LegalCloudApi::version($version, $documento));
     }
 
-    public function confirmar(Request $request, string $documentoId, string $versionId): JsonResponse
+    public function confirmar(Request $request, string $documentoId, string $versionId, IngestionService $ingesta): JsonResponse
     {
         LegalCloudApi::exige($request->user(), 'documentos.crear');
 
@@ -195,10 +252,17 @@ class DocumentoApiController extends Controller
         $documento->update([
             'ocr_estado' => $procesado ? 'procesado' : 'pendiente',
             'contenido_ocr' => $procesado ? $texto : $documento->contenido_ocr,
-            'embedding_estado' => $procesado ? 'indexado' : 'pendiente',
+            'embedding_estado' => $procesado ? 'en_indexacion' : 'pendiente',
             'version_actual' => $version->numero,
         ]);
         $version->update(['contenido' => $procesado ? $texto : $version->contenido]);
+
+        if ($procesado) {
+            try {
+                $ingesta->procesar($documento->fresh());
+            } catch (\Throwable) {
+            }
+        }
 
         AuditoriaLogger::registrar('version.confirmar', 'documentos', $documento->codigo.' v'.$version->numero);
 
@@ -280,23 +344,14 @@ class DocumentoApiController extends Controller
         ]);
     }
 
-    public function reprocesar(Request $request, string $documentoId, string $versionId): JsonResponse
+    public function reprocesar(Request $request, string $documentoId, string $versionId, IngestionService $ingesta): JsonResponse
     {
         LegalCloudApi::exige($request->user(), 'documentos.actualizar');
 
         $documento = Documento::query()->findOrFail(LegalCloudApi::parseId($documentoId));
         $version = $documento->versiones()->findOrFail(LegalCloudApi::parseId($versionId));
-
-        $texto = '';
-        if ($documento->archivo_ruta && Storage::disk('public')->exists($documento->archivo_ruta)) {
-            $texto = PdfSimple::extraer(Storage::disk('public')->get($documento->archivo_ruta) ?: '');
-        }
-
-        $documento->update([
-            'ocr_estado' => $texto !== '' ? 'procesado' : 'pendiente',
-            'contenido_ocr' => $texto !== '' ? $texto : $documento->contenido_ocr,
-            'embedding_estado' => $texto !== '' ? 'indexado' : 'pendiente',
-        ]);
+        $documento = $ingesta->procesar($documento);
+        $texto = trim((string) $documento->contenido_ocr);
 
         AuditoriaLogger::registrar('procesamiento.ejecutar', 'ocr', $documento->codigo);
 

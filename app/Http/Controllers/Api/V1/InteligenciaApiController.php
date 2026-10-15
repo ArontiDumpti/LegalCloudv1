@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\ConsultaRag;
 use App\Models\Documento;
 use App\Models\Expediente;
-use App\Services\MockRagService;
+use App\Services\BusquedaSemanticaService;
+use App\Services\MsRagService;
 use App\Support\AuditoriaLogger;
 use App\Support\LegalCloudApi;
 use Illuminate\Http\JsonResponse;
@@ -29,7 +30,7 @@ class InteligenciaApiController extends Controller
         return LegalCloudApi::json(LegalCloudApi::pagina($datos));
     }
 
-    public function crearBusqueda(Request $request): JsonResponse
+    public function crearBusqueda(Request $request, BusquedaSemanticaService $semantica): JsonResponse
     {
         LegalCloudApi::exige($request->user(), 'busqueda.consultar');
 
@@ -41,40 +42,17 @@ class InteligenciaApiController extends Controller
         ]);
 
         $limite = $datos['limite'] ?? 10;
-        $terminos = array_filter(preg_split('/\s+/', mb_strtolower($datos['consulta'])) ?: []);
+        $expedienteId = ! empty($datos['filtros']['expedienteId'])
+            ? LegalCloudApi::parseId((string) $datos['filtros']['expedienteId'])
+            : null;
 
-        $query = Documento::query()->with(['expediente', 'categoria']);
-
-        if (! empty($datos['filtros']['expedienteId'])) {
-            $query->where('expediente_id', LegalCloudApi::parseId((string) $datos['filtros']['expedienteId']));
-        }
-
-        $resultados = $query->get()->map(function (Documento $documento) use ($terminos) {
-            $corpus = mb_strtolower(($documento->titulo ?? '').' '.($documento->contenido_ocr ?? ''));
-            $puntaje = 0;
-            foreach ($terminos as $termino) {
-                if (mb_strlen((string) $termino) > 2 && str_contains($corpus, (string) $termino)) {
-                    $puntaje++;
-                }
-            }
-
-            return [
-                'documento' => LegalCloudApi::documento($documento),
-                'puntaje' => $puntaje,
-                'fragmento' => mb_strimwidth(preg_replace('/\s+/', ' ', (string) $documento->contenido_ocr) ?: $documento->titulo, 0, 280, '…'),
-            ];
-        })
-            ->filter(fn (array $item) => $item['puntaje'] > 0)
-            ->sortByDesc('puntaje')
-            ->take($limite)
-            ->values()
-            ->all();
+        $resultados = $semantica->buscar($datos['consulta'], $limite, $expedienteId);
 
         $id = (string) Str::uuid();
         $busqueda = [
             'id' => $id,
             'consulta' => $datos['consulta'],
-            'modo' => $datos['modo'] ?? 'hibrida',
+            'modo' => $datos['modo'] ?? 'semantica',
             'resultados' => $resultados,
             'creadoEn' => now()->toIso8601String(),
         ];
@@ -106,13 +84,16 @@ class InteligenciaApiController extends Controller
     {
         LegalCloudApi::exige($request->user(), 'asistente.conversar');
 
+        $limite = min(max((int) $request->query('limite', 40), 5), 80);
+
         $datos = ConsultaRag::query()
             ->where('user_id', $request->user()->id)
             ->latest()
+            ->limit($limite)
             ->get()
             ->map(fn (ConsultaRag $consulta) => LegalCloudApi::conversacion($consulta));
 
-        return LegalCloudApi::json(LegalCloudApi::pagina($datos));
+        return LegalCloudApi::json(LegalCloudApi::pagina($datos, $limite));
     }
 
     public function crearConversacion(Request $request): JsonResponse
@@ -163,7 +144,7 @@ class InteligenciaApiController extends Controller
         ]));
     }
 
-    public function crearMensaje(Request $request, string $conversacionId, MockRagService $rag): JsonResponse
+    public function crearMensaje(Request $request, string $conversacionId, MsRagService $rag): JsonResponse
     {
         LegalCloudApi::exige($request->user(), 'asistente.conversar');
 
