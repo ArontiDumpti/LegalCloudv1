@@ -1,0 +1,507 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R 10 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Length 2649 >>
+stream
+0.067 0.227 0.431 rg
+50 742 512 28 re f
+1 1 1 rg
+BT
+/F2 12 Tf
+62 752 Td
+(LEGALCLOUD AI) Tj
+ET
+0.067 0.227 0.431 rg
+50 48 512 1.2 re f
+0 0 0 rg
+BT
+/F2 12 Tf
+62 710 Td
+(Gu\355a para usar LegalCloud AI) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Esta gu\355a explica qu\351 debe hacer una persona para usar LegalCloud AI \(mockup de) Tj
+/F1 10 Tf
+0 -15 Td
+(demostraci\363n\).) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(1. QU\311 ES LEGALCLOUD AI) Tj
+/F1 10 Tf
+0 -15 Td
+(Plataforma de gesti\363n documental para organizaciones legales o administrativas. El OCR y el) Tj
+/F1 10 Tf
+0 -15 Td
+(asistente RAG est\341n simulados: no hay inteligencia artificial real. Sirve para mostrar) Tj
+/F1 10 Tf
+0 -15 Td
+(expedientes, documentos, consultas y roles.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(2. QU\311 NECESITA ANTES DE EMPEZAR) Tj
+/F1 10 Tf
+0 -15 Td
+(- Windows con XAMPP \(MySQL encendido\)) Tj
+/F1 10 Tf
+0 -15 Td
+(- PHP 8.5 \(o PHP 8.3 o superior\)) Tj
+/F1 10 Tf
+0 -15 Td
+(- Composer) Tj
+/F1 10 Tf
+0 -15 Td
+(- Node.js y npm) Tj
+/F1 10 Tf
+0 -15 Td
+(- El c\363digo del proyecto \(carpeta local o GitHub\)) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Repositorio: https://github.com/neutrosomar/LegalCloudv1) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(3. PASOS PARA DEJARLO LISTO) Tj
+/F1 10 Tf
+0 -15 Td
+(Paso A. Encender MySQL en el panel de XAMPP.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Paso B. Crear la base de datos legalcloud en phpMyAdmin \(http://localhost/phpmyadmin\).) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Paso C. Abrir una terminal en la carpeta del proyecto.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Paso D. Instalar dependencias:) Tj
+/F1 10 Tf
+0 -15 Td
+(composer install) Tj
+/F1 10 Tf
+0 -15 Td
+(npm install) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Paso E. Copiar el archivo de entorno:) Tj
+/F1 10 Tf
+0 -15 Td
+(copy .env.example .env) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Paso F. Editar .env y poner:) Tj
+/F1 10 Tf
+0 -15 Td
+(APP_NAME="LegalCloud AI") Tj
+/F1 10 Tf
+0 -15 Td
+(APP_URL=http://localhost:8000) Tj
+/F1 10 Tf
+0 -15 Td
+(DB_CONNECTION=mysql) Tj
+/F1 10 Tf
+0 -15 Td
+(DB_HOST=127.0.0.1) Tj
+/F1 10 Tf
+0 -15 Td
+(DB_PORT=3306) Tj
+/F1 10 Tf
+0 -15 Td
+(DB_DATABASE=legalcloud) Tj
+/F1 10 Tf
+0 -15 Td
+(DB_USERNAME=root) Tj
+/F1 10 Tf
+0 -15 Td
+(DB_PASSWORD=) Tj
+/F1 10 Tf
+0 -15 Td
+(\(Deje la contrase\361a vac\355a si XAMPP no tiene clave en root.\)) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Paso G. Generar la clave y preparar la base:) Tj
+/F1 10 Tf
+0 -15 Td
+(php artisan key:generate) Tj
+ET
+0.25 0.35 0.55 rg
+BT
+/F1 8 Tf
+260 32 Td
+(P\341gina 1 de 3) Tj
+ET
+
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 5 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
+endobj
+7 0 obj
+<< /Length 2540 >>
+stream
+0.067 0.227 0.431 rg
+50 742 512 28 re f
+1 1 1 rg
+BT
+/F2 12 Tf
+62 752 Td
+(LEGALCLOUD AI) Tj
+ET
+0.067 0.227 0.431 rg
+50 48 512 1.2 re f
+0 0 0 rg
+BT
+/F1 10 Tf
+62 710 Td
+(php artisan migrate) Tj
+/F1 10 Tf
+0 -15 Td
+(php artisan db:seed --class=LegalCloudSeeder) Tj
+/F1 10 Tf
+0 -15 Td
+(php artisan storage:link) Tj
+/F1 10 Tf
+0 -15 Td
+(npm run build) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(4. C\323MO ABRIR LA APLICACI\323N) Tj
+/F1 10 Tf
+0 -15 Td
+(En la carpeta del proyecto ejecute:) Tj
+/F1 10 Tf
+0 -15 Td
+(php artisan serve --host=127.0.0.1 --port=8000) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Luego abra el navegador en:) Tj
+/F1 10 Tf
+0 -15 Td
+(http://127.0.0.1:8000/login) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Si cierra esa terminal, el servidor se apaga y el navegador dir\341 ERR_CONNECTION_REFUSED.) Tj
+/F1 10 Tf
+0 -15 Td
+(Vuelva a ejecutar el comando serve.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(No use http://localhost sin puerto: eso es XAMPP, no LegalCloud.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(5. PERSONAL, ROLES, CORREOS Y CONTRASE\321AS) Tj
+/F1 10 Tf
+0 -15 Td
+(La contrase\361a de todo el personal de demostraci\363n es: password) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(1\) Armas L\363pez Tatiana de F\341tima Luc\355a) Tj
+/F1 10 Tf
+0 -15 Td
+(Rol: Administradora) Tj
+/F1 10 Tf
+0 -15 Td
+(Correo: admin@legalcloud.com) Tj
+/F1 10 Tf
+0 -15 Td
+(Contrase\361a: password) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(2\) Arteaga Benites Almendra Nicolle) Tj
+/F1 10 Tf
+0 -15 Td
+(Rol: Responsable documental) Tj
+/F1 10 Tf
+0 -15 Td
+(Correo: documental@legalcloud.com) Tj
+/F1 10 Tf
+0 -15 Td
+(Contrase\361a: password) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(3\) Dom\355nguez Alba Carlos Daniel) Tj
+/F1 10 Tf
+0 -15 Td
+(Rol: Especialista / Analista) Tj
+/F1 10 Tf
+0 -15 Td
+(Correo: analista@legalcloud.com) Tj
+/F1 10 Tf
+0 -15 Td
+(Contrase\361a: password) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(4\) Lozano D\355az Omar Jack) Tj
+/F1 10 Tf
+0 -15 Td
+(Rol: Usuario consultor) Tj
+/F1 10 Tf
+0 -15 Td
+(Correo: consultor@legalcloud.com) Tj
+/F1 10 Tf
+0 -15 Td
+(Contrase\361a: password) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(5\) Segura Venturo Williams Aaron) Tj
+/F1 10 Tf
+0 -15 Td
+(Rol: Administrador) Tj
+/F1 10 Tf
+0 -15 Td
+(Correo: williams@legalcloud.com) Tj
+/F1 10 Tf
+0 -15 Td
+(Contrase\361a: password) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(6. QU\311 PUEDE HACER CADA ROL) Tj
+ET
+0.25 0.35 0.55 rg
+BT
+/F1 8 Tf
+260 32 Td
+(P\341gina 2 de 3) Tj
+ET
+
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 7 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
+endobj
+9 0 obj
+<< /Length 2809 >>
+stream
+0.067 0.227 0.431 rg
+50 742 512 28 re f
+1 1 1 rg
+BT
+/F2 12 Tf
+62 752 Td
+(LEGALCLOUD AI) Tj
+ET
+0.067 0.227 0.431 rg
+50 48 512 1.2 re f
+0 0 0 rg
+BT
+/F1 10 Tf
+62 710 Td
+(Administrador \(Tatiana y Williams\):) Tj
+/F1 10 Tf
+0 -15 Td
+(- Entra a todos los m\363dulos.) Tj
+/F1 10 Tf
+0 -15 Td
+(- Gestiona usuarios y roles.) Tj
+/F1 10 Tf
+0 -15 Td
+(- Ve la auditor\355a \(bit\341cora\).) Tj
+/F1 10 Tf
+0 -15 Td
+(- Puede usar documentos, expedientes, b\372squeda y asistente.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Responsable documental \(Almendra\):) Tj
+/F1 10 Tf
+0 -15 Td
+(- Administra expedientes, categor\355as y documentos.) Tj
+/F1 10 Tf
+0 -15 Td
+(- Puede entrar a Usuarios y roles y a Auditor\355a.) Tj
+/F1 10 Tf
+0 -15 Td
+(- No es el perfil de solo consulta.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Especialista / Analista \(Carlos Daniel\):) Tj
+/F1 10 Tf
+0 -15 Td
+(- Clasifica documentos, revisa OCR y analiza.) Tj
+/F1 10 Tf
+0 -15 Td
+(- Puede entrar a Usuarios y roles y a Auditor\355a.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Usuario consultor \(Omar Jack\):) Tj
+/F1 10 Tf
+0 -15 Td
+(- Consulta expedientes, busca y pregunta al asistente RAG.) Tj
+/F1 10 Tf
+0 -15 Td
+(- NO puede entrar a Usuarios y roles.) Tj
+/F1 10 Tf
+0 -15 Td
+(- NO puede entrar a Auditor\355a.) Tj
+/F1 10 Tf
+0 -15 Td
+(- Esas opciones no aparecen en su men\372. Si escribe la URL, recibe acceso denegado \(403\).) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(7. C\323MO PROBARLO R\301PIDO) Tj
+/F1 10 Tf
+0 -15 Td
+(1. Entre con consultor@legalcloud.com y password.) Tj
+/F1 10 Tf
+0 -15 Td
+(2. Confirme que no ve Usuarios y roles ni Auditor\355a.) Tj
+/F1 10 Tf
+0 -15 Td
+(3. Cierre sesi\363n.) Tj
+/F1 10 Tf
+0 -15 Td
+(4. Entre con williams@legalcloud.com y password.) Tj
+/F1 10 Tf
+0 -15 Td
+(5. Confirme que s\355 ve Usuarios y roles y Auditor\355a.) Tj
+/F1 10 Tf
+0 -15 Td
+(6. En Documentos puede subir un PDF o usar el documento de ejemplo.) Tj
+/F1 10 Tf
+0 -15 Td
+(7. En Asistente RAG pregunte: \277Cu\341les son los requisitos establecidos para realizar) Tj
+/F1 10 Tf
+0 -15 Td
+(determinado procedimiento?) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(8. SI ALGO NO FUNCIONA) Tj
+/F1 10 Tf
+0 -15 Td
+(- El navegador no conecta: el servidor artisan no est\341 corriendo.) Tj
+/F1 10 Tf
+0 -15 Td
+(- P\341gina en blanco: ejecute npm run build y borre public/hot si existe.) Tj
+/F1 10 Tf
+0 -15 Td
+(- Error de base de datos: MySQL de XAMPP debe estar encendido y la base debe llamarse) Tj
+/F1 10 Tf
+0 -15 Td
+(legalcloud.) Tj
+/F1 10 Tf
+0 -15 Td
+(- No entra con un correo: use exactamente @legalcloud.com y la contrase\361a password.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Documento de uso interno para la demostraci\363n de LegalCloud AI.) Tj
+ET
+0.25 0.35 0.55 rg
+BT
+/F1 8 Tf
+260 32 Td
+(P\341gina 3 de 3) Tj
+ET
+
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 9 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
+endobj
+xref
+0 11
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000128 00000 n 
+0000000225 00000 n 
+0000000327 00000 n 
+0000003028 00000 n 
+0000003164 00000 n 
+0000005756 00000 n 
+0000005892 00000 n 
+0000008753 00000 n 
+trailer << /Size 11 /Root 1 0 R >>
+startxref
+8890
+%%EOF
