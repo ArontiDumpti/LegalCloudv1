@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="960" viewBox="0 0 1320 960">
+  <defs>
+    <marker id="open" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1,1 L9,4 L1,7" fill="none" stroke="#1B3A4B" stroke-width="1.2"/>
+    </marker>
+  </defs>
+  <rect width="1320" height="960" fill="#ffffff"/>
+  <text x="660" y="32" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#1B3A4B">Inteligencia documental: inclusiones, extensiones y sistemas externos</text>
+
+  <rect x="200" y="64" width="780" height="820" rx="8" fill="#F4F7FB" stroke="#1B3A4B" stroke-width="1.6"/>
+  <text x="590" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#1B3A4B">LegalCloud AI</text>
+
+  <g fill="none" stroke="#1B3A4B" stroke-width="1.5" stroke-linecap="round">
+    <path d="M148 180 H284"/>
+    <path d="M148 450 H284"/>
+    <path d="M148 438 L612 213"/>
+    <path d="M148 640 L284 560"/>
+    <path d="M148 676 L284 780"/>
+  </g>
+
+  <g fill="none" stroke="#1B3A4B" stroke-width="1.6" stroke-linecap="round">
+    <circle cx="108" cy="158" r="13"/>
+    <path d="M108 171 V204 M86 186 H130 M108 204 L90 232 M108 204 L126 232"/>
+    <circle cx="108" cy="428" r="13"/>
+    <path d="M108 441 V474 M86 456 H130 M108 474 L90 502 M108 474 L126 502"/>
+    <circle cx="108" cy="648" r="13"/>
+    <path d="M108 661 V694 M86 676 H130 M108 694 L90 722 M108 694 L126 722"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" fill="#1B3A4B" text-anchor="middle">
+    <text x="108" y="258">Responsable</text>
+    <text x="108" y="274">documental</text>
+    <text x="108" y="528">Especialista</text>
+    <text x="108" y="748">Usuario</text>
+    <text x="108" y="764">consultor</text>
+  </g>
+
+  <g fill="#ffffff" stroke="#1B3A4B" stroke-width="1.5">
+    <ellipse cx="380" cy="180" rx="96" ry="38"/>
+    <ellipse cx="660" cy="180" rx="96" ry="38"/>
+    <ellipse cx="660" cy="350" rx="96" ry="38"/>
+    <ellipse cx="380" cy="450" rx="96" ry="38"/>
+    <ellipse cx="380" cy="560" rx="96" ry="38"/>
+    <ellipse cx="660" cy="700" rx="96" ry="38"/>
+    <ellipse cx="380" cy="780" rx="96" ry="38"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#1B3A4B" text-anchor="middle">
+    <text x="380" y="176">UC-15</text><text x="380" y="192">Cargar y versionar</text>
+    <text x="660" y="176">UC-09</text><text x="660" y="192">Procesar documento</text>
+    <text x="660" y="346">UC-23</text><text x="660" y="362">Extraer texto por OCR</text>
+    <text x="380" y="446">UC-10</text><text x="380" y="462">Generar resumen</text>
+    <text x="380" y="556">UC-06</text><text x="380" y="572">Buscar en el fondo</text>
+    <text x="660" y="696">UC-22</text><text x="660" y="712">Registrar evidencia</text>
+    <text x="380" y="776">UC-07</text><text x="380" y="792">Preguntar al asistente</text>
+  </g>
+
+  <g fill="none" stroke="#1B3A4B" stroke-width="1.4" stroke-dasharray="6 4">
+    <path d="M476 180 H564" marker-end="url(#open)"/>
+    <path d="M660 312 V218" marker-end="url(#open)"/>
+    <path d="M476 450 H510 V700"/>
+    <path d="M476 560 H510"/>
+    <path d="M476 780 H510"/>
+    <path d="M510 780 V700"/>
+    <path d="M510 700 H564" marker-end="url(#open)"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="11" fill="#1B3A4B">
+    <text x="520" y="170" text-anchor="middle">ùincludeù</text>
+    <text x="700" y="270">ùextendù</text>
+    <text x="700" y="286" font-size="10">digitalizado o sin texto</text>
+    <text x="528" y="640">ùincludeù</text>
+  </g>
+
+  <g font-family="Arial, sans-serif" fill="#1B3A4B">
+    <rect x="1000" y="96" width="260" height="46" rx="4" fill="#ffffff" stroke="#1B3A4B"/>
+    <text x="1130" y="114" text-anchor="middle" font-size="10">ùsistema externoù</text>
+    <text x="1130" y="130" text-anchor="middle" font-size="12">Almacenamiento de objetos</text>
+
+    <rect x="1000" y="157" width="260" height="46" rx="4" fill="#ffffff" stroke="#1B3A4B"/>
+    <text x="1130" y="175" text-anchor="middle" font-size="10">ùsistema externoù</text>
+    <text x="1130" y="191" text-anchor="middle" font-size="12">ùndice semùntico</text>
+
+    <rect x="1000" y="327" width="260" height="46" rx="4" fill="#ffffff" stroke="#1B3A4B"/>
+    <text x="1130" y="345" text-anchor="middle" font-size="10">ùsistema externoù</text>
+    <text x="1130" y="361" text-anchor="middle" font-size="12">Motor OCR</text>
+
+    <rect x="1000" y="757" width="260" height="46" rx="4" fill="#ffffff" stroke="#1B3A4B"/>
+    <text x="1130" y="775" text-anchor="middle" font-size="10">ùsistema externoù</text>
+    <text x="1130" y="791" text-anchor="middle" font-size="12">Modelo de lenguaje</text>
+  </g>
+
+  <g fill="none" stroke="#1B3A4B" stroke-width="1.4">
+    <path d="M380 142 V120 H1000"/>
+    <path d="M756 180 H1000"/>
+    <path d="M756 350 H1000"/>
+    <path d="M476 450 H920 V780 H1000"/>
+    <path d="M476 780 H1000"/>
+  </g>
+
+  <text x="660" y="930" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#1B3A4B">UC-06 y UC-07 consultan el mismo ùndice semùntico. UC-07 y UC-10 usan el modelo de lenguaje.</text>
+</svg>

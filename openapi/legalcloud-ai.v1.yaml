@@ -1,0 +1,3139 @@
+openapi: 3.0.3
+info:
+  title: LegalCloud AI API
+  version: 1.0.0
+  summary: Contrato API-first de la plataforma de gestión documental inteligente.
+  description: |
+    API HTTP de LegalCloud AI para organizaciones que administran expedientes
+    y documentos administrativos, normativos o jurídicos.
+
+    El contrato es la fuente de verdad. Base de datos, almacenamiento de objetos,
+    OCR, índices vectoriales y el LLM se implementan detrás de estos recursos.
+
+    ## Actores
+    - `ADMIN`: usuarios, roles, auditoría global y configuración.
+    - `RESPONSABLE_DOCUMENTAL`: expedientes, clasificación, versiones y ciclo de vida.
+    - `ESPECIALISTA`: análisis, metadatos, OCR, resúmenes y consultas sobre expedientes asignados.
+    - `CONSULTOR`: lectura, descarga, búsqueda y preguntas dentro de su alcance.
+
+    ## Autorización
+    Dos capas, ambas obligatorias:
+    1. RBAC de organización (`permisos` del token).
+    2. ACL del expediente (`responsable`, `editor`, `revisor`, `lector`) para
+       especialista y consultor. El administrador y el responsable documental
+       operan a nivel de organización.
+
+    Un intento denegado responde `403` y queda en auditoría.
+
+    ## Trazabilidad legal
+    No hay borrado físico en v1. Expedientes y documentos se archivan.
+    Cada versión es inmutable; restaurar crea una versión nueva que apunta
+    a la de origen. Búsquedas y respuestas del asistente guardan un paquete
+    de evidencia (versión, hash, página y fragmento).
+
+    ## Procesamiento de IA
+    Carga por URL prefirmada → confirmar → trabajo asíncrono de OCR (si el
+    origen es digitalizado o el archivo no trae texto) → fragmentación →
+    embeddings → estado `indexado`. La búsqueda híbrida y el asistente RAG
+    solo usan versiones indexadas vigentes, salvo que la consulta fije una versión.
+
+    ## Convenciones
+    - Base: `/api/v1`. Organización tomada del claim `org_id` del JWT.
+    - Fechas en ISO-8601 UTC. Identificadores UUID.
+    - Listados con cursor (`limit`, `cursor`).
+    - Errores `application/problem+json` (RFC 9457).
+    - Mutaciones sensibles aceptan `Idempotency-Key`.
+    - Toda respuesta incluye `X-Request-Id`.
+  contact:
+    name: LegalCloud AI
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.legalcloud.example/api/v1
+    description: Producción
+  - url: https://api.staging.legalcloud.example/api/v1
+    description: Staging
+
+tags:
+  - name: Autenticacion
+    description: Identidad de primera parte. El acceso a recursos usa el JWT emitido aquí.
+  - name: Usuarios
+    description: Altas, invitación, suspensión y asignación de roles de organización.
+  - name: Roles
+    description: RBAC. Los cuatro roles de sistema no se eliminan; sí puede ajustarse un rol personalizado.
+  - name: Categorias
+    description: Taxonomía jerárquica para clasificar expedientes y documentos.
+  - name: Expedientes
+    description: Unidad de gestión. Agrupa documentos, participantes, estado y trazabilidad.
+  - name: Documentos
+    description: Pieza documental lógica. El binario vive en sus versiones.
+  - name: Versiones
+    description: Historial inmutable del archivo, con hash y procedencia.
+  - name: Procesamiento
+    description: Trabajos asíncronos de OCR e indexación semántica.
+  - name: Busqueda
+    description: Recuperación léxica, semántica o híbrida, con evidencia persistida.
+  - name: Asistente
+    description: Conversaciones RAG, respuestas con fuentes y resúmenes.
+  - name: Notificaciones
+    description: Avisos in-app producidos por el sistema.
+  - name: Auditoria
+    description: Bitácora append-only de operaciones, consultas y denegaciones.
+  - name: Dashboard
+    description: Indicadores operativos filtrados según el alcance del rol.
+  - name: Sistema
+    description: Salud del servicio.
+
+security:
+  - bearerAuth: []
+
+paths:
+  /salud:
+    get:
+      tags: [Sistema]
+      operationId: obtenerSalud
+      summary: Estado de la API
+      security: []
+      responses:
+        "200":
+          description: Servicio disponible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Salud"
+
+  /auth/iniciar-sesion:
+    post:
+      tags: [Autenticacion]
+      operationId: iniciarSesion
+      summary: Obtener tokens con correo y contraseña
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InicioSesion"
+      responses:
+        "200":
+          description: Tokens emitidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "429":
+          $ref: "#/components/responses/DemasiadasSolicitudes"
+
+  /auth/renovar:
+    post:
+      tags: [Autenticacion]
+      operationId: renovarSesion
+      summary: Rotar el refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Renovacion"
+      responses:
+        "200":
+          description: Nuevo par de tokens. El refresh anterior queda invalidado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+
+  /auth/cerrar-sesion:
+    post:
+      tags: [Autenticacion]
+      operationId: cerrarSesion
+      summary: Revocar el refresh token actual
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Renovacion"
+      responses:
+        "204":
+          description: Sesión revocada
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+
+  /auth/yo:
+    get:
+      tags: [Autenticacion]
+      operationId: obtenerPerfil
+      summary: Perfil, roles y permisos efectivos
+      responses:
+        "200":
+          description: Usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Perfil"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+
+  /auth/aceptar-invitacion:
+    post:
+      tags: [Autenticacion]
+      operationId: aceptarInvitacion
+      summary: Activar una cuenta invitada y definir contraseña
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AceptarInvitacion"
+      responses:
+        "200":
+          description: Cuenta activa y tokens emitidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "400":
+          $ref: "#/components/responses/SolicitudInvalida"
+        "410":
+          description: Invitación expirada o ya usada
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problema"
+
+  /auth/recuperar-contrasena:
+    post:
+      tags: [Autenticacion]
+      operationId: recuperarContrasena
+      summary: Solicitar restablecimiento sin revelar si el correo existe
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [correo]
+              properties:
+                correo:
+                  type: string
+                  format: email
+      responses:
+        "202":
+          description: Solicitud aceptada
+
+  /auth/cambiar-contrasena:
+    post:
+      tags: [Autenticacion]
+      operationId: cambiarContrasena
+      summary: Cambiar la contraseña de la sesión actual
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CambioContrasena"
+      responses:
+        "204":
+          description: Contraseña actualizada. Se revocan los demás refresh tokens.
+        "400":
+          $ref: "#/components/responses/SolicitudInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+
+  /permisos:
+    get:
+      tags: [Roles]
+      operationId: listarPermisos
+      summary: Catálogo de permisos asignables
+      x-permiso: roles.leer
+      responses:
+        "200":
+          description: Permisos del producto
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Permiso"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+
+  /roles:
+    get:
+      tags: [Roles]
+      operationId: listarRoles
+      summary: Listar roles de la organización
+      x-permiso: roles.leer
+      responses:
+        "200":
+          description: Roles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Rol"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+    post:
+      tags: [Roles]
+      operationId: crearRol
+      summary: Crear un rol personalizado
+      x-permiso: roles.gestionar
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RolCrear"
+      responses:
+        "201":
+          description: Rol creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rol"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+
+  /roles/{rolId}:
+    parameters:
+      - $ref: "#/components/parameters/RolId"
+    get:
+      tags: [Roles]
+      operationId: obtenerRol
+      summary: Obtener un rol
+      x-permiso: roles.leer
+      responses:
+        "200":
+          description: Rol
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rol"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+    patch:
+      tags: [Roles]
+      operationId: actualizarRol
+      summary: Renombrar o describir un rol personalizado
+      description: Los roles de sistema rechazan cambios de código con `409`.
+      x-permiso: roles.gestionar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RolActualizar"
+      responses:
+        "200":
+          description: Rol actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rol"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+
+  /roles/{rolId}/permisos:
+    parameters:
+      - $ref: "#/components/parameters/RolId"
+    put:
+      tags: [Roles]
+      operationId: reemplazarPermisos
+      summary: Reemplazar el conjunto de permisos del rol
+      x-permiso: roles.gestionar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [permisos]
+              properties:
+                permisos:
+                  type: array
+                  minItems: 1
+                  uniqueItems: true
+                  items:
+                    type: string
+                    example: expedientes.leer
+      responses:
+        "200":
+          description: Permisos reemplazados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rol"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
+  /usuarios:
+    get:
+      tags: [Usuarios]
+      operationId: listarUsuarios
+      summary: Listar usuarios de la organización
+      x-permiso: usuarios.leer
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: estado
+          in: query
+          schema:
+            $ref: "#/components/schemas/EstadoUsuario"
+        - name: rol
+          in: query
+          schema:
+            type: string
+        - name: q
+          in: query
+          description: Coincidencia por nombre o correo
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Página de usuarios
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaUsuarios"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+    post:
+      tags: [Usuarios]
+      operationId: invitarUsuario
+      summary: Invitar un usuario y asignarle roles
+      x-permiso: usuarios.gestionar
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioInvitar"
+      responses:
+        "201":
+          description: Usuario en estado invitado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+
+  /usuarios/{usuarioId}:
+    parameters:
+      - $ref: "#/components/parameters/UsuarioId"
+    get:
+      tags: [Usuarios]
+      operationId: obtenerUsuario
+      summary: Obtener un usuario
+      x-permiso: usuarios.leer
+      responses:
+        "200":
+          description: Usuario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+    patch:
+      tags: [Usuarios]
+      operationId: actualizarUsuario
+      summary: Actualizar nombre del usuario
+      x-permiso: usuarios.gestionar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioActualizar"
+      responses:
+        "200":
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
+  /usuarios/{usuarioId}/roles:
+    parameters:
+      - $ref: "#/components/parameters/UsuarioId"
+    put:
+      tags: [Usuarios]
+      operationId: reemplazarRolesUsuario
+      summary: Reemplazar los roles de organización del usuario
+      x-permiso: usuarios.gestionar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [roles]
+              properties:
+                roles:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        "200":
+          description: Roles actualizados. Genera evento `usuario.roles_reemplazados`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
+  /usuarios/{usuarioId}/suspender:
+    parameters:
+      - $ref: "#/components/parameters/UsuarioId"
+    post:
+      tags: [Usuarios]
+      operationId: suspenderUsuario
+      summary: Suspender el acceso sin eliminar historial
+      x-permiso: usuarios.gestionar
+      responses:
+        "200":
+          description: Usuario suspendido y sesiones revocadas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+
+  /usuarios/{usuarioId}/reactivar:
+    parameters:
+      - $ref: "#/components/parameters/UsuarioId"
+    post:
+      tags: [Usuarios]
+      operationId: reactivarUsuario
+      summary: Reactivar un usuario suspendido
+      x-permiso: usuarios.gestionar
+      responses:
+        "200":
+          description: Usuario activo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+
+  /categorias:
+    get:
+      tags: [Categorias]
+      operationId: listarCategorias
+      summary: Listar el árbol de categorías
+      x-permiso: categorias.leer
+      parameters:
+        - name: soloActivas
+          in: query
+          schema:
+            type: boolean
+            default: true
+      responses:
+        "200":
+          description: Categorías en orden de ruta
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Categoria"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+    post:
+      tags: [Categorias]
+      operationId: crearCategoria
+      summary: Crear una categoría
+      x-permiso: categorias.gestionar
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoriaCrear"
+      responses:
+        "201":
+          description: Categoría creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Categoria"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+
+  /categorias/{categoriaId}:
+    parameters:
+      - $ref: "#/components/parameters/CategoriaId"
+    get:
+      tags: [Categorias]
+      operationId: obtenerCategoria
+      summary: Obtener una categoría
+      x-permiso: categorias.leer
+      responses:
+        "200":
+          description: Categoría
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Categoria"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+    patch:
+      tags: [Categorias]
+      operationId: actualizarCategoria
+      summary: Actualizar nombre, descripción o padre
+      x-permiso: categorias.gestionar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoriaActualizar"
+      responses:
+        "200":
+          description: Categoría actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Categoria"
+        "409":
+          description: Ciclo en la jerarquía o código duplicado
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problema"
+
+  /categorias/{categoriaId}/desactivar:
+    parameters:
+      - $ref: "#/components/parameters/CategoriaId"
+    post:
+      tags: [Categorias]
+      operationId: desactivarCategoria
+      summary: Desactivar una categoría sin reescribir documentos históricos
+      x-permiso: categorias.gestionar
+      responses:
+        "200":
+          description: Categoría inactiva
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Categoria"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
+  /expedientes:
+    get:
+      tags: [Expedientes]
+      operationId: listarExpedientes
+      summary: Listar expedientes visibles para el usuario
+      description: |
+        Responsable documental y administrador ven la organización.
+        Especialista y consultor solo ven expedientes donde son participantes.
+      x-permiso: expedientes.leer
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: estado
+          in: query
+          schema:
+            $ref: "#/components/schemas/EstadoExpediente"
+        - name: categoriaId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: responsableId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: nivelConfidencialidad
+          in: query
+          schema:
+            $ref: "#/components/schemas/NivelConfidencialidad"
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: desde
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: hasta
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Página de expedientes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaExpedientes"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+    post:
+      tags: [Expedientes]
+      operationId: crearExpediente
+      summary: Abrir un expediente en estado borrador
+      x-permiso: expedientes.crear
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpedienteCrear"
+            example:
+              titulo: Licencias de funcionamiento 2026
+              descripcion: Expediente de reglamentos y resoluciones del procedimiento de licencias.
+              categoriaId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              nivelConfidencialidad: restringido
+              etiquetas: [licencias, procedimiento]
+      responses:
+        "201":
+          description: Expediente creado. El creador queda como responsable del ACL.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expediente"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "422":
+          $ref: "#/components/responses/EntidadImprocesable"
+
+  /expedientes/{expedienteId}:
+    parameters:
+      - $ref: "#/components/parameters/ExpedienteId"
+    get:
+      tags: [Expedientes]
+      operationId: obtenerExpediente
+      summary: Obtener un expediente
+      x-permiso: expedientes.leer
+      responses:
+        "200":
+          description: Expediente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expediente"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+    patch:
+      tags: [Expedientes]
+      operationId: actualizarExpediente
+      summary: Actualizar metadatos sin cambiar el estado
+      description: El estado solo cambia por `/transiciones`.
+      x-permiso: expedientes.actualizar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpedienteActualizar"
+      responses:
+        "200":
+          description: Expediente actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expediente"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          description: Expediente archivado
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problema"
+
+  /expedientes/{expedienteId}/transiciones:
+    parameters:
+      - $ref: "#/components/parameters/ExpedienteId"
+    post:
+      tags: [Expedientes]
+      operationId: transicionarExpediente
+      summary: Ejecutar una transición de estado
+      description: |
+        Transiciones válidas:
+        - borrador → en_tramite (`abrir`)
+        - en_tramite → en_revision (`enviar_a_revision`)
+        - en_revision → en_tramite (`devolver`)
+        - en_revision → cerrado (`cerrar`)
+        - cerrado → archivado (`archivar`)
+        - cerrado → en_tramite (`reabrir`, solo administrador o responsable documental)
+      x-permiso: expedientes.transicionar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransicionExpediente"
+            example:
+              accion: enviar_a_revision
+              comentario: Reglamento y resolución ya indexados.
+      responses:
+        "200":
+          description: Estado actualizado y evento de auditoría registrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expediente"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+
+  /expedientes/{expedienteId}/participantes:
+    parameters:
+      - $ref: "#/components/parameters/ExpedienteId"
+    get:
+      tags: [Expedientes]
+      operationId: listarParticipantes
+      summary: Listar la ACL del expediente
+      x-permiso: expedientes.leer
+      responses:
+        "200":
+          description: Participantes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Participante"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+    put:
+      tags: [Expedientes]
+      operationId: reemplazarParticipantes
+      summary: Reemplazar participantes del expediente
+      description: Debe quedar exactamente un participante con rol `responsable`.
+      x-permiso: expedientes.asignar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [participantes]
+              properties:
+                participantes:
+                  type: array
+                  minItems: 1
+                  items:
+                    $ref: "#/components/schemas/ParticipanteAsignar"
+      responses:
+        "200":
+          description: ACL reemplazada. Notifica a los usuarios incorporados.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Participante"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "422":
+          $ref: "#/components/responses/EntidadImprocesable"
+
+  /expedientes/{expedienteId}/trazabilidad:
+    parameters:
+      - $ref: "#/components/parameters/ExpedienteId"
+    get:
+      tags: [Expedientes]
+      operationId: listarTrazabilidadExpediente
+      summary: Eventos del expediente, sus documentos y consultas asociadas
+      description: |
+        Incluye operaciones y consultas RAG acotadas al expediente.
+        El consultor no recibe intentos denegados ni direcciones IP.
+      x-permiso: expedientes.leer
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Página de eventos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaEventos"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+
+  /expedientes/{expedienteId}/documentos:
+    parameters:
+      - $ref: "#/components/parameters/ExpedienteId"
+    get:
+      tags: [Documentos]
+      operationId: listarDocumentos
+      summary: Listar documentos del expediente
+      x-permiso: documentos.leer
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: categoriaId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: tipo
+          in: query
+          schema:
+            $ref: "#/components/schemas/TipoDocumento"
+        - name: estadoProcesamiento
+          in: query
+          schema:
+            $ref: "#/components/schemas/EstadoProcesamiento"
+        - name: incluirArchivados
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Página de documentos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaDocumentos"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+    post:
+      tags: [Documentos]
+      operationId: iniciarDocumento
+      summary: Registrar metadatos y obtener URL de carga
+      description: |
+        No envía el binario a la API. Reserva documento + versión 1 y devuelve
+        una URL prefirmada de un solo uso. El procesamiento empieza al confirmar.
+      x-permiso: documentos.crear
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentoIniciar"
+            example:
+              titulo: Reglamento de licencias
+              tipo: reglamento
+              origen: digital
+              categoriaId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              nivelConfidencialidad: restringido
+              nombreArchivo: reglamento-licencias.pdf
+              tipoMime: application/pdf
+              tamanoBytes: 482113
+      responses:
+        "201":
+          description: Reserva creada y URL de carga
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CargaIniciada"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "413":
+          description: El tamaño declarado supera el límite de la organización
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problema"
+        "415":
+          description: Tipo MIME no admitido
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problema"
+
+  /documentos/{documentoId}:
+    parameters:
+      - $ref: "#/components/parameters/DocumentoId"
+    get:
+      tags: [Documentos]
+      operationId: obtenerDocumento
+      summary: Obtener el documento y el resumen de su versión vigente
+      x-permiso: documentos.leer
+      responses:
+        "200":
+          description: Documento
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Documento"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+    patch:
+      tags: [Documentos]
+      operationId: actualizarDocumento
+      summary: Clasificar o corregir metadatos
+      description: No modifica el binario. Un cambio de clasificación queda auditado.
+      x-permiso: documentos.actualizar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentoActualizar"
+      responses:
+        "200":
+          description: Documento actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Documento"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+
+  /documentos/{documentoId}/archivar:
+    parameters:
+      - $ref: "#/components/parameters/DocumentoId"
+    post:
+      tags: [Documentos]
+      operationId: archivarDocumento
+      summary: Archivar el documento y retirarlo del índice de consulta
+      x-permiso: documentos.crear
+      responses:
+        "200":
+          description: Documento archivado. Las versiones y la evidencia histórica se conservan.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Documento"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+
+  /documentos/{documentoId}/versiones:
+    parameters:
+      - $ref: "#/components/parameters/DocumentoId"
+    get:
+      tags: [Versiones]
+      operationId: listarVersiones
+      summary: Historial de versiones, de la más reciente a la más antigua
+      x-permiso: versiones.leer
+      responses:
+        "200":
+          description: Versiones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VersionDocumento"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+    post:
+      tags: [Versiones]
+      operationId: iniciarVersion
+      summary: Reservar una versión nueva y obtener URL de carga
+      x-permiso: versiones.crear
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VersionIniciar"
+      responses:
+        "201":
+          description: Versión reservada. Aún no es la vigente.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CargaIniciada"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          description: Ya existe una carga sin confirmar para este documento
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problema"
+
+  /documentos/{documentoId}/versiones/{versionId}:
+    parameters:
+      - $ref: "#/components/parameters/DocumentoId"
+      - $ref: "#/components/parameters/VersionId"
+    get:
+      tags: [Versiones]
+      operationId: obtenerVersion
+      summary: Obtener una versión
+      x-permiso: versiones.leer
+      responses:
+        "200":
+          description: Versión
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionDocumento"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
+  /documentos/{documentoId}/versiones/{versionId}/confirmar:
+    parameters:
+      - $ref: "#/components/parameters/DocumentoId"
+      - $ref: "#/components/parameters/VersionId"
+    post:
+      tags: [Versiones]
+      operationId: confirmarVersion
+      summary: Confirmar el binario subido y encolar OCR e indexación
+      description: |
+        Verifica tamaño y hash contra el objeto almacenado. Si coinciden,
+        publica la versión como vigente y crea un trabajo de procesamiento.
+        La versión anterior permanece consultable, pero deja de ser la vigente.
+      x-permiso: versiones.crear
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [hashSha256]
+              properties:
+                hashSha256:
+                  type: string
+                  pattern: "^[a-f0-9]{64}$"
+      responses:
+        "202":
+          description: Versión publicada y procesamiento encolado
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL del trabajo de procesamiento
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfirmacionVersion"
+        "409":
+          description: Hash distinto al objeto almacenado, o la reserva expiró
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problema"
+        "422":
+          $ref: "#/components/responses/EntidadImprocesable"
+
+  /documentos/{documentoId}/versiones/{versionId}/restaurar:
+    parameters:
+      - $ref: "#/components/parameters/DocumentoId"
+      - $ref: "#/components/parameters/VersionId"
+    post:
+      tags: [Versiones]
+      operationId: restaurarVersion
+      summary: Publicar una versión nueva copiada desde una anterior
+      description: No reescribe historia. La nueva versión cita `restauradaDesdeVersionId` y se reindexa.
+      x-permiso: versiones.restaurar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notas:
+                  type: string
+                  maxLength: 2000
+      responses:
+        "202":
+          description: Nueva versión vigente en procesamiento
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfirmacionVersion"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+
+  /documentos/{documentoId}/versiones/{versionId}/descarga:
+    parameters:
+      - $ref: "#/components/parameters/DocumentoId"
+      - $ref: "#/components/parameters/VersionId"
+    get:
+      tags: [Versiones]
+      operationId: obtenerDescarga
+      summary: Obtener una URL temporal de descarga
+      description: Cada descarga exitosa genera el evento `documento.descargar`.
+      x-permiso: documentos.descargar
+      responses:
+        "200":
+          description: URL prefirmada de lectura
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Descarga"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          description: La versión todavía no tiene un binario confirmado
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problema"
+
+  /documentos/{documentoId}/versiones/{versionId}/texto:
+    parameters:
+      - $ref: "#/components/parameters/DocumentoId"
+      - $ref: "#/components/parameters/VersionId"
+    get:
+      tags: [Procesamiento]
+      operationId: obtenerTexto
+      summary: Leer el texto extraído por página
+      x-permiso: procesamiento.leer
+      parameters:
+        - name: pagina
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Páginas de texto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaTexto"
+        "409":
+          description: OCR aún no completado
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problema"
+
+  /documentos/{documentoId}/versiones/{versionId}/procesamiento:
+    parameters:
+      - $ref: "#/components/parameters/DocumentoId"
+      - $ref: "#/components/parameters/VersionId"
+    post:
+      tags: [Procesamiento]
+      operationId: reprocesarVersion
+      summary: Volver a ejecutar OCR, embeddings o ambas etapas
+      x-permiso: procesamiento.ejecutar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProcesamientoSolicitar"
+      responses:
+        "202":
+          description: Trabajo encolado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trabajo"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "409":
+          description: Ya hay un trabajo activo para esa versión
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problema"
+
+  /trabajos/{trabajoId}:
+    parameters:
+      - $ref: "#/components/parameters/TrabajoId"
+    get:
+      tags: [Procesamiento]
+      operationId: obtenerTrabajo
+      summary: Consultar un trabajo de OCR o indexación
+      x-permiso: procesamiento.leer
+      responses:
+        "200":
+          description: Trabajo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trabajo"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
+  /busquedas:
+    get:
+      tags: [Busqueda]
+      operationId: listarBusquedas
+      summary: Historial de búsquedas visibles
+      description: Cada usuario ve las propias. Auditoría global está en `/auditoria`.
+      x-permiso: busqueda.consultar
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Página de búsquedas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaBusquedas"
+    post:
+      tags: [Busqueda]
+      operationId: crearBusqueda
+      summary: Buscar y persistir la evidencia de la consulta
+      x-permiso: busqueda.consultar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusquedaCrear"
+            example:
+              consulta: requisitos para obtener la licencia de funcionamiento
+              modo: hibrida
+              limite: 10
+              filtros:
+                expedienteId: 6b1e0d3a-1d4e-4c3a-9a55-0e5c2a6f9b11
+                tipos: [reglamento, resolucion]
+      responses:
+        "201":
+          description: Consulta registrada y resultados autorizados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Busqueda"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "422":
+          $ref: "#/components/responses/EntidadImprocesable"
+
+  /busquedas/{busquedaId}:
+    parameters:
+      - $ref: "#/components/parameters/BusquedaId"
+    get:
+      tags: [Busqueda]
+      operationId: obtenerBusqueda
+      summary: Recuperar una búsqueda y su paquete de evidencia
+      x-permiso: busqueda.consultar
+      responses:
+        "200":
+          description: Búsqueda
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Busqueda"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
+  /conversaciones:
+    get:
+      tags: [Asistente]
+      operationId: listarConversaciones
+      summary: Listar las conversaciones del usuario autenticado
+      x-permiso: asistente.conversar
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: expedienteId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Página de conversaciones
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaConversaciones"
+    post:
+      tags: [Asistente]
+      operationId: crearConversacion
+      summary: Abrir una conversación con un alcance documental
+      description: El alcance vacío significa "todo lo que el usuario puede leer".
+      x-permiso: asistente.conversar
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversacionCrear"
+            example:
+              titulo: Requisitos del procedimiento de licencias
+              alcance:
+                expedienteIds:
+                  - 6b1e0d3a-1d4e-4c3a-9a55-0e5c2a6f9b11
+      responses:
+        "201":
+          description: Conversación creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversacion"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+
+  /conversaciones/{conversacionId}:
+    parameters:
+      - $ref: "#/components/parameters/ConversacionId"
+    get:
+      tags: [Asistente]
+      operationId: obtenerConversacion
+      summary: Obtener la conversación y sus mensajes
+      x-permiso: asistente.conversar
+      responses:
+        "200":
+          description: Conversación
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversacionDetalle"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
+  /conversaciones/{conversacionId}/mensajes:
+    parameters:
+      - $ref: "#/components/parameters/ConversacionId"
+    post:
+      tags: [Asistente]
+      operationId: crearMensaje
+      summary: Preguntar al asistente RAG
+      description: |
+        Recupera fragmentos de versiones indexadas dentro del alcance y de la ACL,
+        genera la respuesta solo con ese contexto y devuelve las fuentes.
+        Si no hay evidencia suficiente, `respuestaSustentada` es false y el
+        contenido lo declara, sin inventar requisitos.
+        La pregunta, los fragmentos usados y la respuesta quedan auditados.
+      x-permiso: asistente.conversar
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MensajeCrear"
+            example:
+              contenido: ¿Cuáles son los requisitos establecidos para realizar el procedimiento de licencia de funcionamiento?
+      responses:
+        "200":
+          description: Respuesta sustentada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Intercambio"
+              example:
+                pregunta:
+                  id: 9c1d1b22-0a11-4e55-8a10-11aa22bb33cc
+                  rol: usuario
+                  contenido: ¿Cuáles son los requisitos establecidos para realizar el procedimiento de licencia de funcionamiento?
+                  creadoEn: "2026-10-14T22:10:00Z"
+                respuesta:
+                  id: 9c1d1b22-0a11-4e55-8a10-11aa22bb33cd
+                  rol: asistente
+                  contenido: El reglamento exige solicitud firmada, plano de ubicación y pago de la tasa. La resolución fija un plazo de 15 días hábiles.
+                  respuestaSustentada: true
+                  fuentes:
+                    - documentoId: 11111111-1111-1111-1111-111111111111
+                      versionId: 22222222-2222-2222-2222-222222222222
+                      titulo: Reglamento de licencias
+                      pagina: 4
+                      fragmento: Son requisitos la solicitud firmada, el plano de ubicación y el comprobante de pago de la tasa.
+                      puntaje: 0.86
+                      hashSha256: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                  creadoEn: "2026-10-14T22:10:03Z"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "429":
+          $ref: "#/components/responses/DemasiadasSolicitudes"
+        "504":
+          description: El modelo no respondió dentro del tiempo límite. La pregunta quedó registrada.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problema"
+
+  /resumenes:
+    post:
+      tags: [Asistente]
+      operationId: solicitarResumen
+      summary: Generar un resumen sustentado de un expediente, documento o versión
+      x-permiso: asistente.resumir
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResumenSolicitar"
+            example:
+              alcance: expediente
+              recursoId: 6b1e0d3a-1d4e-4c3a-9a55-0e5c2a6f9b11
+              extension: ejecutivo
+      responses:
+        "202":
+          description: Resumen encolado
+          headers:
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resumen"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+        "422":
+          $ref: "#/components/responses/EntidadImprocesable"
+
+  /resumenes/{resumenId}:
+    parameters:
+      - $ref: "#/components/parameters/ResumenId"
+    get:
+      tags: [Asistente]
+      operationId: obtenerResumen
+      summary: Consultar un resumen y sus fuentes
+      x-permiso: asistente.resumir
+      responses:
+        "200":
+          description: Resumen
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resumen"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
+  /notificaciones:
+    get:
+      tags: [Notificaciones]
+      operationId: listarNotificaciones
+      summary: Listar notificaciones del usuario autenticado
+      x-permiso: notificaciones.leer
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: soloNoLeidas
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Página de notificaciones
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaNotificaciones"
+
+  /notificaciones/no-leidas/conteo:
+    get:
+      tags: [Notificaciones]
+      operationId: contarNoLeidas
+      summary: Contar notificaciones sin leer
+      x-permiso: notificaciones.leer
+      responses:
+        "200":
+          description: Conteo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [total]
+                properties:
+                  total:
+                    type: integer
+                    minimum: 0
+
+  /notificaciones/{notificacionId}/lectura:
+    parameters:
+      - $ref: "#/components/parameters/NotificacionId"
+    post:
+      tags: [Notificaciones]
+      operationId: marcarNotificacionLeida
+      summary: Marcar una notificación como leída
+      x-permiso: notificaciones.leer
+      responses:
+        "200":
+          description: Notificación actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notificacion"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
+  /notificaciones/lectura:
+    post:
+      tags: [Notificaciones]
+      operationId: marcarTodasLeidas
+      summary: Marcar todas las notificaciones como leídas
+      x-permiso: notificaciones.leer
+      responses:
+        "204":
+          description: Bandeja marcada
+
+  /auditoria:
+    get:
+      tags: [Auditoria]
+      operationId: listarAuditoria
+      summary: Consultar la bitácora de la organización
+      x-permiso: auditoria.leer
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: actorId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: accion
+          in: query
+          schema:
+            type: string
+            example: asistente.consultar
+        - name: recursoTipo
+          in: query
+          schema:
+            $ref: "#/components/schemas/TipoRecurso"
+        - name: recursoId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: resultado
+          in: query
+          schema:
+            $ref: "#/components/schemas/ResultadoAuditoria"
+        - name: desde
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: hasta
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: Página de eventos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaEventos"
+        "403":
+          $ref: "#/components/responses/Prohibido"
+
+  /auditoria/{eventoId}:
+    parameters:
+      - $ref: "#/components/parameters/EventoId"
+    get:
+      tags: [Auditoria]
+      operationId: obtenerEventoAuditoria
+      summary: Obtener un evento de auditoría
+      x-permiso: auditoria.leer
+      responses:
+        "200":
+          description: Evento
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventoAuditoria"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
+  /dashboard:
+    get:
+      tags: [Dashboard]
+      operationId: obtenerDashboard
+      summary: Indicadores del alcance del usuario
+      x-permiso: dashboard.leer
+      responses:
+        "200":
+          description: Resumen operativo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dashboard"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT de acceso. Claims mínimos: `sub`, `org_id`, `roles`, `permissions`, `exp`.
+
+  parameters:
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+      description: Reenviar la misma clave y el mismo cuerpo devuelve el resultado original durante 24 horas.
+    UsuarioId:
+      name: usuarioId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    RolId:
+      name: rolId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CategoriaId:
+      name: categoriaId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ExpedienteId:
+      name: expedienteId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    DocumentoId:
+      name: documentoId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    VersionId:
+      name: versionId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    TrabajoId:
+      name: trabajoId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    BusquedaId:
+      name: busquedaId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ConversacionId:
+      name: conversacionId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ResumenId:
+      name: resumenId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    NotificacionId:
+      name: notificacionId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    EventoId:
+      name: eventoId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    SolicitudInvalida:
+      description: Cuerpo o parámetros con formato inválido
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+    NoAutenticado:
+      description: Token ausente, vencido o revocado
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+    Prohibido:
+      description: El rol o la ACL del expediente no permiten la operación
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+    NoEncontrado:
+      description: Recurso inexistente o fuera de la organización
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+    Conflicto:
+      description: Estado incompatible, duplicado o transición no permitida
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+    EntidadImprocesable:
+      description: Regla de negocio no satisfecha
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+    DemasiadasSolicitudes:
+      description: Cuota de autenticación o de consultas de IA agotada
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+
+  schemas:
+    Salud:
+      type: object
+      required: [estado, version]
+      properties:
+        estado:
+          type: string
+          enum: [ok]
+        version:
+          type: string
+          example: 1.0.0
+
+    Problema:
+      type: object
+      required: [type, title, status, detalle, codigo, trazaId]
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://api.legalcloud.example/problemas/conflicto-estado
+        title:
+          type: string
+        status:
+          type: integer
+        detalle:
+          type: string
+        codigo:
+          type: string
+          enum:
+            - validacion
+            - no_autenticado
+            - prohibido
+            - no_encontrado
+            - conflicto_estado
+            - duplicado
+            - archivo_no_soportado
+            - archivo_demasiado_grande
+            - procesamiento_en_curso
+            - cuota_ia_excedida
+            - tiempo_agotado
+            - error_interno
+        instancia:
+          type: string
+          format: uri
+        trazaId:
+          type: string
+          format: uuid
+        errores:
+          type: array
+          items:
+            type: object
+            required: [campo, mensaje]
+            properties:
+              campo:
+                type: string
+              mensaje:
+                type: string
+
+    Paginacion:
+      type: object
+      required: [limit, nextCursor]
+      properties:
+        limit:
+          type: integer
+        nextCursor:
+          type: string
+          nullable: true
+
+    InicioSesion:
+      type: object
+      required: [correo, contrasena]
+      properties:
+        correo:
+          type: string
+          format: email
+        contrasena:
+          type: string
+          format: password
+          minLength: 12
+          maxLength: 128
+
+    Renovacion:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+
+    AceptarInvitacion:
+      type: object
+      required: [token, contrasena]
+      properties:
+        token:
+          type: string
+        contrasena:
+          type: string
+          format: password
+          minLength: 12
+          maxLength: 128
+
+    CambioContrasena:
+      type: object
+      required: [contrasenaActual, contrasenaNueva]
+      properties:
+        contrasenaActual:
+          type: string
+          format: password
+        contrasenaNueva:
+          type: string
+          format: password
+          minLength: 12
+          maxLength: 128
+
+    Token:
+      type: object
+      required: [tokenType, accessToken, refreshToken, expiraEn]
+      properties:
+        tokenType:
+          type: string
+          enum: [Bearer]
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiraEn:
+          type: integer
+          description: Segundos de vida del access token
+          example: 900
+
+    Perfil:
+      allOf:
+        - $ref: "#/components/schemas/Usuario"
+        - type: object
+          required: [permisos]
+          properties:
+            permisos:
+              type: array
+              items:
+                type: string
+
+    EstadoUsuario:
+      type: string
+      enum: [invitado, activo, suspendido]
+
+    Usuario:
+      type: object
+      required: [id, correo, nombre, estado, roles, creadoEn]
+      properties:
+        id:
+          type: string
+          format: uuid
+        correo:
+          type: string
+          format: email
+        nombre:
+          type: string
+        apellido:
+          type: string
+        estado:
+          $ref: "#/components/schemas/EstadoUsuario"
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RolResumen"
+        creadoEn:
+          type: string
+          format: date-time
+        actualizadoEn:
+          type: string
+          format: date-time
+
+    UsuarioInvitar:
+      type: object
+      required: [correo, nombre, roles]
+      properties:
+        correo:
+          type: string
+          format: email
+        nombre:
+          type: string
+          maxLength: 120
+        apellido:
+          type: string
+          maxLength: 120
+        roles:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+
+    UsuarioActualizar:
+      type: object
+      properties:
+        nombre:
+          type: string
+          maxLength: 120
+        apellido:
+          type: string
+          maxLength: 120
+
+    PaginaUsuarios:
+      type: object
+      required: [datos, paginacion]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Usuario"
+        paginacion:
+          $ref: "#/components/schemas/Paginacion"
+
+    Permiso:
+      type: object
+      required: [codigo, modulo, descripcion]
+      properties:
+        codigo:
+          type: string
+          example: asistente.conversar
+        modulo:
+          type: string
+          example: asistente
+        descripcion:
+          type: string
+
+    RolResumen:
+      type: object
+      required: [id, codigo, nombre]
+      properties:
+        id:
+          type: string
+          format: uuid
+        codigo:
+          type: string
+          example: RESPONSABLE_DOCUMENTAL
+        nombre:
+          type: string
+
+    Rol:
+      allOf:
+        - $ref: "#/components/schemas/RolResumen"
+        - type: object
+          required: [sistema, permisos]
+          properties:
+            descripcion:
+              type: string
+            sistema:
+              type: boolean
+              description: Verdadero en los cuatro roles iniciales del producto
+            permisos:
+              type: array
+              items:
+                type: string
+
+    RolCrear:
+      type: object
+      required: [codigo, nombre, permisos]
+      properties:
+        codigo:
+          type: string
+          pattern: "^[A-Z][A-Z0-9_]{2,40}$"
+        nombre:
+          type: string
+          maxLength: 120
+        descripcion:
+          type: string
+          maxLength: 500
+        permisos:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+
+    RolActualizar:
+      type: object
+      properties:
+        nombre:
+          type: string
+          maxLength: 120
+        descripcion:
+          type: string
+          maxLength: 500
+
+    Categoria:
+      type: object
+      required: [id, codigo, nombre, activa, ruta]
+      properties:
+        id:
+          type: string
+          format: uuid
+        codigo:
+          type: string
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        padreId:
+          type: string
+          format: uuid
+          nullable: true
+        activa:
+          type: boolean
+        ruta:
+          type: string
+          example: Normativa / Municipal / Licencias
+
+    CategoriaCrear:
+      type: object
+      required: [codigo, nombre]
+      properties:
+        codigo:
+          type: string
+          maxLength: 40
+        nombre:
+          type: string
+          maxLength: 160
+        descripcion:
+          type: string
+          maxLength: 500
+        padreId:
+          type: string
+          format: uuid
+
+    CategoriaActualizar:
+      type: object
+      properties:
+        nombre:
+          type: string
+          maxLength: 160
+        descripcion:
+          type: string
+          maxLength: 500
+        padreId:
+          type: string
+          format: uuid
+          nullable: true
+
+    NivelConfidencialidad:
+      type: string
+      enum: [interno, restringido, confidencial, reservado]
+
+    EstadoExpediente:
+      type: string
+      enum: [borrador, en_tramite, en_revision, cerrado, archivado]
+
+    Expediente:
+      type: object
+      required:
+        - id
+        - codigo
+        - titulo
+        - estado
+        - nivelConfidencialidad
+        - responsableId
+        - creadoEn
+      properties:
+        id:
+          type: string
+          format: uuid
+        codigo:
+          type: string
+          example: EXP-2026-00041
+          description: Asignado por el servidor
+        titulo:
+          type: string
+        descripcion:
+          type: string
+        estado:
+          $ref: "#/components/schemas/EstadoExpediente"
+        nivelConfidencialidad:
+          $ref: "#/components/schemas/NivelConfidencialidad"
+        categoriaId:
+          type: string
+          format: uuid
+          nullable: true
+        responsableId:
+          type: string
+          format: uuid
+        etiquetas:
+          type: array
+          items:
+            type: string
+        documentos:
+          type: integer
+          description: Conteo de documentos no archivados
+        creadoPor:
+          type: string
+          format: uuid
+        creadoEn:
+          type: string
+          format: date-time
+        actualizadoEn:
+          type: string
+          format: date-time
+        cerradoEn:
+          type: string
+          format: date-time
+          nullable: true
+
+    ExpedienteCrear:
+      type: object
+      required: [titulo, nivelConfidencialidad]
+      properties:
+        titulo:
+          type: string
+          maxLength: 240
+        descripcion:
+          type: string
+          maxLength: 4000
+        categoriaId:
+          type: string
+          format: uuid
+        nivelConfidencialidad:
+          $ref: "#/components/schemas/NivelConfidencialidad"
+        etiquetas:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            maxLength: 40
+
+    ExpedienteActualizar:
+      type: object
+      properties:
+        titulo:
+          type: string
+          maxLength: 240
+        descripcion:
+          type: string
+          maxLength: 4000
+        categoriaId:
+          type: string
+          format: uuid
+          nullable: true
+        nivelConfidencialidad:
+          $ref: "#/components/schemas/NivelConfidencialidad"
+        etiquetas:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+
+    TransicionExpediente:
+      type: object
+      required: [accion]
+      properties:
+        accion:
+          type: string
+          enum: [abrir, enviar_a_revision, devolver, cerrar, archivar, reabrir]
+        comentario:
+          type: string
+          maxLength: 2000
+
+    PaginaExpedientes:
+      type: object
+      required: [datos, paginacion]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Expediente"
+        paginacion:
+          $ref: "#/components/schemas/Paginacion"
+
+    RolEnExpediente:
+      type: string
+      enum: [responsable, editor, revisor, lector]
+      description: |
+        lector: leer, descargar, buscar y preguntar.
+        revisor: lector + clasificar metadatos + resumir.
+        editor: revisor + cargar documentos, versiones y reprocesar.
+        responsable: editor + transiciones y ACL.
+
+    Participante:
+      type: object
+      required: [usuarioId, nombre, rolEnExpediente]
+      properties:
+        usuarioId:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        correo:
+          type: string
+          format: email
+        rolEnExpediente:
+          $ref: "#/components/schemas/RolEnExpediente"
+
+    ParticipanteAsignar:
+      type: object
+      required: [usuarioId, rolEnExpediente]
+      properties:
+        usuarioId:
+          type: string
+          format: uuid
+        rolEnExpediente:
+          $ref: "#/components/schemas/RolEnExpediente"
+
+    TipoDocumento:
+      type: string
+      enum: [reglamento, resolucion, informe, acta, contrato, oficio, otro]
+
+    EstadoProcesamiento:
+      type: string
+      enum: [pendiente_carga, en_ocr, en_indexacion, indexado, error, archivado]
+
+    Documento:
+      type: object
+      required: [id, expedienteId, titulo, tipo, origen, estadoProcesamiento, creadoEn]
+      properties:
+        id:
+          type: string
+          format: uuid
+        expedienteId:
+          type: string
+          format: uuid
+        titulo:
+          type: string
+        descripcion:
+          type: string
+        tipo:
+          $ref: "#/components/schemas/TipoDocumento"
+        origen:
+          type: string
+          enum: [digital, digitalizado]
+        categoriaId:
+          type: string
+          format: uuid
+          nullable: true
+        nivelConfidencialidad:
+          $ref: "#/components/schemas/NivelConfidencialidad"
+        estadoProcesamiento:
+          $ref: "#/components/schemas/EstadoProcesamiento"
+        versionVigente:
+          $ref: "#/components/schemas/VersionResumen"
+        creadoPor:
+          type: string
+          format: uuid
+        creadoEn:
+          type: string
+          format: date-time
+        actualizadoEn:
+          type: string
+          format: date-time
+
+    DocumentoIniciar:
+      type: object
+      required: [titulo, tipo, origen, nombreArchivo, tipoMime, tamanoBytes]
+      properties:
+        titulo:
+          type: string
+          maxLength: 240
+        descripcion:
+          type: string
+          maxLength: 4000
+        tipo:
+          $ref: "#/components/schemas/TipoDocumento"
+        origen:
+          type: string
+          enum: [digital, digitalizado]
+          description: "`digitalizado` fuerza OCR aunque el archivo contenga una capa de texto."
+        categoriaId:
+          type: string
+          format: uuid
+        nivelConfidencialidad:
+          $ref: "#/components/schemas/NivelConfidencialidad"
+        nombreArchivo:
+          type: string
+          maxLength: 255
+        tipoMime:
+          type: string
+          enum:
+            - application/pdf
+            - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+            - text/plain
+            - image/jpeg
+            - image/png
+            - image/tiff
+        tamanoBytes:
+          type: integer
+          minimum: 1
+        notas:
+          type: string
+          maxLength: 2000
+
+    DocumentoActualizar:
+      type: object
+      properties:
+        titulo:
+          type: string
+          maxLength: 240
+        descripcion:
+          type: string
+          maxLength: 4000
+        tipo:
+          $ref: "#/components/schemas/TipoDocumento"
+        categoriaId:
+          type: string
+          format: uuid
+          nullable: true
+        nivelConfidencialidad:
+          $ref: "#/components/schemas/NivelConfidencialidad"
+
+    PaginaDocumentos:
+      type: object
+      required: [datos, paginacion]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Documento"
+        paginacion:
+          $ref: "#/components/schemas/Paginacion"
+
+    VersionResumen:
+      type: object
+      required: [id, numero, esVigente]
+      properties:
+        id:
+          type: string
+          format: uuid
+        numero:
+          type: integer
+          minimum: 1
+        esVigente:
+          type: boolean
+        hashSha256:
+          type: string
+          nullable: true
+
+    VersionDocumento:
+      type: object
+      required: [id, documentoId, numero, estado, esVigente, creadoEn]
+      properties:
+        id:
+          type: string
+          format: uuid
+        documentoId:
+          type: string
+          format: uuid
+        numero:
+          type: integer
+        nombreArchivo:
+          type: string
+        tipoMime:
+          type: string
+        tamanoBytes:
+          type: integer
+          nullable: true
+        hashSha256:
+          type: string
+          nullable: true
+        notas:
+          type: string
+        estado:
+          type: string
+          enum: [reservada, vigente, sustituida, fallida]
+        esVigente:
+          type: boolean
+        estadoOcr:
+          type: string
+          enum: [no_requerido, en_cola, procesando, completado, fallido]
+        estadoIndexacion:
+          type: string
+          enum: [en_cola, procesando, completado, fallido, retirada]
+        restauradaDesdeVersionId:
+          type: string
+          format: uuid
+          nullable: true
+        subidoPor:
+          type: string
+          format: uuid
+        creadoEn:
+          type: string
+          format: date-time
+        confirmadoEn:
+          type: string
+          format: date-time
+          nullable: true
+
+    VersionIniciar:
+      type: object
+      required: [nombreArchivo, tipoMime, tamanoBytes]
+      properties:
+        nombreArchivo:
+          type: string
+          maxLength: 255
+        tipoMime:
+          type: string
+        tamanoBytes:
+          type: integer
+          minimum: 1
+        notas:
+          type: string
+          maxLength: 2000
+
+    InstruccionesCarga:
+      type: object
+      required: [metodo, url, expiraEn]
+      properties:
+        metodo:
+          type: string
+          enum: [PUT]
+        url:
+          type: string
+          format: uri
+        encabezados:
+          type: object
+          additionalProperties:
+            type: string
+        expiraEn:
+          type: string
+          format: date-time
+
+    CargaIniciada:
+      type: object
+      required: [documento, version, carga]
+      properties:
+        documento:
+          $ref: "#/components/schemas/Documento"
+        version:
+          $ref: "#/components/schemas/VersionDocumento"
+        carga:
+          $ref: "#/components/schemas/InstruccionesCarga"
+
+    ConfirmacionVersion:
+      type: object
+      required: [version, trabajo]
+      properties:
+        version:
+          $ref: "#/components/schemas/VersionDocumento"
+        trabajo:
+          $ref: "#/components/schemas/Trabajo"
+
+    Descarga:
+      type: object
+      required: [url, expiraEn, hashSha256]
+      properties:
+        url:
+          type: string
+          format: uri
+        expiraEn:
+          type: string
+          format: date-time
+        nombreArchivo:
+          type: string
+        hashSha256:
+          type: string
+
+    PaginaTexto:
+      type: object
+      required: [versionId, datos, paginacion]
+      properties:
+        versionId:
+          type: string
+          format: uuid
+        datos:
+          type: array
+          items:
+            type: object
+            required: [pagina, texto]
+            properties:
+              pagina:
+                type: integer
+              texto:
+                type: string
+              confianzaOcr:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 1
+                nullable: true
+        paginacion:
+          $ref: "#/components/schemas/Paginacion"
+
+    ProcesamientoSolicitar:
+      type: object
+      required: [etapas]
+      properties:
+        etapas:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            enum: [ocr, embeddings]
+        idioma:
+          type: string
+          description: Pista BCP 47 para el OCR
+          example: es
+
+    EstadoTrabajo:
+      type: string
+      enum: [en_cola, procesando, completado, fallido]
+
+    Trabajo:
+      type: object
+      required: [id, versionId, etapas, estado, creadoEn]
+      properties:
+        id:
+          type: string
+          format: uuid
+        versionId:
+          type: string
+          format: uuid
+        documentoId:
+          type: string
+          format: uuid
+        etapas:
+          type: array
+          items:
+            type: string
+            enum: [ocr, embeddings]
+        estado:
+          $ref: "#/components/schemas/EstadoTrabajo"
+        paginas:
+          type: integer
+          nullable: true
+        fragmentos:
+          type: integer
+          nullable: true
+        error:
+          type: string
+          nullable: true
+        creadoEn:
+          type: string
+          format: date-time
+        iniciadoEn:
+          type: string
+          format: date-time
+          nullable: true
+        finalizadoEn:
+          type: string
+          format: date-time
+          nullable: true
+
+    ModoBusqueda:
+      type: string
+      enum: [lexica, semantica, hibrida]
+      default: hibrida
+
+    BusquedaCrear:
+      type: object
+      required: [consulta]
+      properties:
+        consulta:
+          type: string
+          minLength: 2
+          maxLength: 1000
+        modo:
+          $ref: "#/components/schemas/ModoBusqueda"
+        limite:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+        filtros:
+          $ref: "#/components/schemas/FiltrosDocumentales"
+
+    FiltrosDocumentales:
+      type: object
+      properties:
+        expedienteId:
+          type: string
+          format: uuid
+        documentoIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        categoriaId:
+          type: string
+          format: uuid
+        tipos:
+          type: array
+          items:
+            $ref: "#/components/schemas/TipoDocumento"
+        nivelConfidencialidad:
+          $ref: "#/components/schemas/NivelConfidencialidad"
+        soloVersionVigente:
+          type: boolean
+          default: true
+
+    Fuente:
+      type: object
+      required: [documentoId, versionId, titulo, fragmento, hashSha256]
+      properties:
+        documentoId:
+          type: string
+          format: uuid
+        versionId:
+          type: string
+          format: uuid
+        expedienteId:
+          type: string
+          format: uuid
+        titulo:
+          type: string
+        pagina:
+          type: integer
+          nullable: true
+        fragmento:
+          type: string
+          description: Cita textual usada como evidencia. No es una paráfrasis del modelo.
+        puntaje:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        hashSha256:
+          type: string
+          description: Hash de la versión citada, para comprobar que la fuente no cambió.
+
+    Busqueda:
+      type: object
+      required: [id, consulta, modo, resultados, creadoEn]
+      properties:
+        id:
+          type: string
+          format: uuid
+        consulta:
+          type: string
+        modo:
+          $ref: "#/components/schemas/ModoBusqueda"
+        filtros:
+          $ref: "#/components/schemas/FiltrosDocumentales"
+        resultados:
+          type: array
+          items:
+            $ref: "#/components/schemas/Fuente"
+        creadoPor:
+          type: string
+          format: uuid
+        creadoEn:
+          type: string
+          format: date-time
+
+    PaginaBusquedas:
+      type: object
+      required: [datos, paginacion]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Busqueda"
+        paginacion:
+          $ref: "#/components/schemas/Paginacion"
+
+    AlcanceAsistente:
+      type: object
+      properties:
+        expedienteIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        documentoIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        categoriaIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    ConversacionCrear:
+      type: object
+      properties:
+        titulo:
+          type: string
+          maxLength: 200
+        alcance:
+          $ref: "#/components/schemas/AlcanceAsistente"
+
+    Conversacion:
+      type: object
+      required: [id, alcance, creadoEn]
+      properties:
+        id:
+          type: string
+          format: uuid
+        titulo:
+          type: string
+          nullable: true
+        alcance:
+          $ref: "#/components/schemas/AlcanceAsistente"
+        creadoEn:
+          type: string
+          format: date-time
+        actualizadoEn:
+          type: string
+          format: date-time
+
+    RolMensaje:
+      type: string
+      enum: [usuario, asistente]
+
+    Mensaje:
+      type: object
+      required: [id, rol, contenido, creadoEn]
+      properties:
+        id:
+          type: string
+          format: uuid
+        rol:
+          $ref: "#/components/schemas/RolMensaje"
+        contenido:
+          type: string
+        respuestaSustentada:
+          type: boolean
+          nullable: true
+        fuentes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Fuente"
+        creadoEn:
+          type: string
+          format: date-time
+
+    MensajeCrear:
+      type: object
+      required: [contenido]
+      properties:
+        contenido:
+          type: string
+          minLength: 2
+          maxLength: 4000
+
+    Intercambio:
+      type: object
+      required: [pregunta, respuesta]
+      properties:
+        pregunta:
+          $ref: "#/components/schemas/Mensaje"
+        respuesta:
+          $ref: "#/components/schemas/Mensaje"
+
+    ConversacionDetalle:
+      allOf:
+        - $ref: "#/components/schemas/Conversacion"
+        - type: object
+          required: [mensajes]
+          properties:
+            mensajes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Mensaje"
+
+    PaginaConversaciones:
+      type: object
+      required: [datos, paginacion]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Conversacion"
+        paginacion:
+          $ref: "#/components/schemas/Paginacion"
+
+    ResumenSolicitar:
+      type: object
+      required: [alcance, recursoId]
+      properties:
+        alcance:
+          type: string
+          enum: [expediente, documento, version]
+        recursoId:
+          type: string
+          format: uuid
+        extension:
+          type: string
+          enum: [breve, ejecutivo, detallado]
+          default: ejecutivo
+
+    Resumen:
+      type: object
+      required: [id, alcance, recursoId, estado, creadoEn]
+      properties:
+        id:
+          type: string
+          format: uuid
+        alcance:
+          type: string
+          enum: [expediente, documento, version]
+        recursoId:
+          type: string
+          format: uuid
+        extension:
+          type: string
+          enum: [breve, ejecutivo, detallado]
+        estado:
+          $ref: "#/components/schemas/EstadoTrabajo"
+        contenido:
+          type: string
+          nullable: true
+        fuentes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Fuente"
+        error:
+          type: string
+          nullable: true
+        creadoEn:
+          type: string
+          format: date-time
+        finalizadoEn:
+          type: string
+          format: date-time
+          nullable: true
+
+    TipoNotificacion:
+      type: string
+      enum:
+        - expediente_asignado
+        - expediente_transicionado
+        - documento_indexado
+        - procesamiento_fallido
+        - resumen_listo
+
+    Notificacion:
+      type: object
+      required: [id, tipo, titulo, mensaje, leida, creadoEn]
+      properties:
+        id:
+          type: string
+          format: uuid
+        tipo:
+          $ref: "#/components/schemas/TipoNotificacion"
+        titulo:
+          type: string
+        mensaje:
+          type: string
+        leida:
+          type: boolean
+        recursoTipo:
+          $ref: "#/components/schemas/TipoRecurso"
+        recursoId:
+          type: string
+          format: uuid
+        creadoEn:
+          type: string
+          format: date-time
+        leidaEn:
+          type: string
+          format: date-time
+          nullable: true
+
+    PaginaNotificaciones:
+      type: object
+      required: [datos, paginacion]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Notificacion"
+        paginacion:
+          $ref: "#/components/schemas/Paginacion"
+
+    TipoRecurso:
+      type: string
+      enum:
+        - usuario
+        - rol
+        - categoria
+        - expediente
+        - documento
+        - version
+        - trabajo
+        - busqueda
+        - conversacion
+        - resumen
+
+    ResultadoAuditoria:
+      type: string
+      enum: [exito, denegado, error]
+
+    EventoAuditoria:
+      type: object
+      required: [id, actorId, accion, recursoTipo, resultado, ocurridoEn]
+      properties:
+        id:
+          type: string
+          format: uuid
+        actorId:
+          type: string
+          format: uuid
+        actorCorreo:
+          type: string
+          format: email
+        accion:
+          type: string
+          description: |
+            Catálogo estable, por ejemplo `expediente.crear`, `expediente.transicionar`,
+            `documento.iniciar`, `version.confirmar`, `documento.descargar`,
+            `procesamiento.ejecutar`, `busqueda.crear`, `asistente.consultar`,
+            `resumen.solicitar`, `usuario.roles_reemplazados`.
+          example: asistente.consultar
+        recursoTipo:
+          $ref: "#/components/schemas/TipoRecurso"
+        recursoId:
+          type: string
+          format: uuid
+          nullable: true
+        resultado:
+          $ref: "#/components/schemas/ResultadoAuditoria"
+        direccionIp:
+          type: string
+          nullable: true
+        requestId:
+          type: string
+        metadatos:
+          type: object
+          additionalProperties: true
+          description: Diferencias de metadatos, transición o identificadores de fuentes. Sin binarios ni secretos.
+        ocurridoEn:
+          type: string
+          format: date-time
+
+    PaginaEventos:
+      type: object
+      required: [datos, paginacion]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventoAuditoria"
+        paginacion:
+          $ref: "#/components/schemas/Paginacion"
+
+    Dashboard:
+      type: object
+      required: [expedientesPorEstado, documentosPorProcesamiento, generadoEn]
+      properties:
+        expedientesPorEstado:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            borrador: 2
+            en_tramite: 14
+            en_revision: 3
+            cerrado: 9
+            archivado: 21
+        documentosPorProcesamiento:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            en_ocr: 1
+            en_indexacion: 2
+            indexado: 86
+            error: 1
+        consultas7d:
+          type: integer
+        resumenes7d:
+          type: integer
+        almacenamientoBytes:
+          type: integer
+          format: int64
+        actividadReciente:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventoAuditoria"
+        generadoEn:
+          type: string
+          format: date-time

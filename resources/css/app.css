@@ -1,0 +1,156 @@
+@import 'tailwindcss';
+
+@plugin 'tailwindcss-animate';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    --font-sans:
+        'DM Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Source Serif 4', ui-serif, Georgia, serif;
+
+    --color-navy: #0b3a6e;
+    --color-royal: #1d4ed8;
+    --color-sky: #3b82f6;
+    --color-ice: #eff6ff;
+    --color-mist: #dbeafe;
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar-background);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+}
+
+:root {
+    --background: hsl(214, 100%, 99%);
+    --foreground: hsl(222, 47%, 11%);
+    --card: hsl(0, 0%, 100%);
+    --card-foreground: hsl(222, 47%, 11%);
+    --popover: hsl(0, 0%, 100%);
+    --popover-foreground: hsl(222, 47%, 11%);
+    --primary: hsl(221, 83%, 40%);
+    --primary-foreground: hsl(0, 0%, 100%);
+    --secondary: hsl(214, 95%, 93%);
+    --secondary-foreground: hsl(222, 47%, 11%);
+    --muted: hsl(214, 100%, 96%);
+    --muted-foreground: hsl(215, 19%, 35%);
+    --accent: hsl(213, 94%, 68%);
+    --accent-foreground: hsl(222, 47%, 11%);
+    --destructive: hsl(0, 72%, 51%);
+    --destructive-foreground: hsl(0, 0%, 98%);
+    --border: hsl(214, 32%, 88%);
+    --input: hsl(214, 32%, 88%);
+    --ring: hsl(221, 83%, 40%);
+    --chart-1: hsl(221, 83%, 40%);
+    --chart-2: hsl(213, 94%, 68%);
+    --chart-3: hsl(199, 89%, 48%);
+    --chart-4: hsl(222, 47%, 20%);
+    --chart-5: hsl(214, 95%, 93%);
+    --radius: 0.75rem;
+    --sidebar-background: hsl(222, 47%, 11%);
+    --sidebar-foreground: hsl(210, 40%, 98%);
+    --sidebar-primary: hsl(213, 94%, 68%);
+    --sidebar-primary-foreground: hsl(222, 47%, 11%);
+    --sidebar-accent: hsl(217, 33%, 18%);
+    --sidebar-accent-foreground: hsl(210, 40%, 98%);
+    --sidebar-border: hsl(217, 33%, 20%);
+    --sidebar-ring: hsl(213, 94%, 68%);
+}
+
+.dark {
+    --background: hsl(222, 47%, 7%);
+    --foreground: hsl(210, 40%, 98%);
+    --card: hsl(222, 47%, 11%);
+    --card-foreground: hsl(210, 40%, 98%);
+    --popover: hsl(222, 47%, 11%);
+    --popover-foreground: hsl(210, 40%, 98%);
+    --primary: hsl(213, 94%, 68%);
+    --primary-foreground: hsl(222, 47%, 11%);
+    --secondary: hsl(217, 33%, 17%);
+    --secondary-foreground: hsl(210, 40%, 98%);
+    --muted: hsl(217, 33%, 17%);
+    --muted-foreground: hsl(215, 20%, 72%);
+    --accent: hsl(217, 91%, 60%);
+    --accent-foreground: hsl(210, 40%, 98%);
+    --destructive: hsl(0, 62%, 45%);
+    --destructive-foreground: hsl(0, 0%, 98%);
+    --border: hsl(217, 33%, 20%);
+    --input: hsl(217, 33%, 20%);
+    --ring: hsl(213, 94%, 68%);
+    --sidebar-background: hsl(222, 47%, 8%);
+    --sidebar-foreground: hsl(210, 40%, 98%);
+    --sidebar-primary: hsl(213, 94%, 68%);
+    --sidebar-primary-foreground: hsl(222, 47%, 11%);
+    --sidebar-accent: hsl(217, 33%, 16%);
+    --sidebar-accent-foreground: hsl(210, 40%, 98%);
+    --sidebar-border: hsl(217, 33%, 16%);
+    --sidebar-ring: hsl(213, 94%, 68%);
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+
+    h1,
+    h2,
+    h3,
+    .font-display {
+        font-family: var(--font-display);
+    }
+}
+
+.hero-grid {
+    background-image:
+        linear-gradient(rgba(29, 78, 216, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(29, 78, 216, 0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+}

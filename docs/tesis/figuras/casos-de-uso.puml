@@ -1,0 +1,88 @@
+' Figura publicada: casos-de-uso-legalcloud-ai.svg
+' Este fuente conserva actores, generalización y casos del contrato API v1.
+@startuml casos-de-uso-legalcloud-ai
+!pragma layout smetana
+title Diagrama de casos de uso de contexto - LegalCloud AI
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam dpi 160
+skinparam defaultFontName Arial
+skinparam titleFontSize 16
+skinparam titleFontColor #1B3A4B
+skinparam ArrowColor #1B3A4B
+skinparam ActorBorderColor #1B3A4B
+skinparam ActorFontColor #1B3A4B
+skinparam ActorFontSize 13
+skinparam usecaseBorderColor #1B3A4B
+skinparam usecaseBackgroundColor white
+skinparam usecaseFontColor #1B3A4B
+skinparam usecaseFontSize 13
+skinparam rectangleBorderColor #1B3A4B
+skinparam rectangleFontColor #1B3A4B
+skinparam nodesep 12
+skinparam ranksep 18
+
+left to right direction
+
+actor "Usuario\nconsultor" as consultor
+actor Especialista as especialista
+actor "Responsable\ndocumental" as responsable
+actor Administrador as administrador
+
+especialista --|> consultor
+responsable --|> especialista
+administrador --|> responsable
+
+rectangle "LegalCloud AI" {
+  usecase "UC-01\nAutenticarse" as UC01
+  usecase "UC-02\nConsultar\nnotificaciones" as UC02
+  usecase "UC-03\nConsultar\ntablero" as UC03
+  usecase "UC-04\nConsultar\nexpedientes" as UC04
+  usecase "UC-05\nDescargar\nversión" as UC05
+  usecase "UC-06\nBuscar en\nel fondo" as UC06
+  usecase "UC-07\nPreguntar al\nasistente" as UC07
+
+  usecase "UC-08\nClasificar\ndocumento" as UC08
+  usecase "UC-09\nProcesar\ndocumento" as UC09
+  usecase "UC-10\nGenerar\nresumen" as UC10
+  usecase "UC-11\nConsultar\ntexto" as UC11
+
+  usecase "UC-12\nRegistrar\nexpediente" as UC12
+  usecase "UC-13\nTransicionar\nestado" as UC13
+  usecase "UC-14\nAsignar\nparticipantes" as UC14
+  usecase "UC-15\nCargar y\nversionar" as UC15
+  usecase "UC-16\nArchivar\ndocumento" as UC16
+  usecase "UC-17\nAdministrar\ncategorías" as UC17
+  usecase "UC-18\nConsultar\ntrazabilidad" as UC18
+
+  usecase "UC-19\nGestionar\nusuarios" as UC19
+  usecase "UC-20\nGestionar\nroles" as UC20
+  usecase "UC-21\nConsultar\nauditoría" as UC21
+}
+
+consultor --> UC01
+consultor --> UC02
+consultor --> UC03
+consultor --> UC04
+consultor --> UC05
+consultor --> UC06
+consultor --> UC07
+
+especialista --> UC08
+especialista --> UC09
+especialista --> UC10
+especialista --> UC11
+
+responsable --> UC12
+responsable --> UC13
+responsable --> UC14
+responsable --> UC15
+responsable --> UC16
+responsable --> UC17
+responsable --> UC18
+
+administrador --> UC19
+administrador --> UC20
+administrador --> UC21
+@enduml

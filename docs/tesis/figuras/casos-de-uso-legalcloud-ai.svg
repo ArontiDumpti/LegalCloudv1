@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1960" height="1120" viewBox="0 0 1960 1120">
+  <defs>
+    <marker id="gen" markerWidth="16" markerHeight="14" refX="14" refY="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1,1 L14,7 L1,13 Z" fill="#ffffff" stroke="#1B3A4B" stroke-width="1.3"/>
+    </marker>
+    <marker id="vto" viewBox="0 0 10 10" markerWidth="7" markerHeight="7" refX="9" refY="5" orient="auto">
+      <path d="M1,1 L9,5 L1,9" fill="none" stroke="#1B3A4B" stroke-width="1.2"/>
+    </marker>
+  </defs>
+
+  <rect width="1960" height="1120" fill="#ffffff"/>
+  <text x="966" y="26" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#1B3A4B">Diagrama de casos de uso de contexto — LegalCloud AI</text>
+
+  <rect x="180" y="40" width="1572" height="1048" rx="10" fill="#F7FAFC" stroke="#1B3A4B" stroke-width="1.8"/>
+  <text x="966" y="64" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#1B3A4B">LegalCloud AI</text>
+  <text x="966" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#1B3A4B">Frontera del sistema · API v1</text>
+
+  <g stroke="#1B3A4B" stroke-width="1">
+    <rect x="268" y="108" width="1360" height="172" rx="6" fill="#E7F1F8"/>
+    <rect x="268" y="296" width="790" height="172" rx="6" fill="#F2F7F0"/>
+    <rect x="268" y="484" width="1360" height="112" rx="6" fill="#FFF6DE"/>
+    <rect x="268" y="644" width="1360" height="172" rx="6" fill="#F8F4EC"/>
+    <rect x="268" y="844" width="600" height="172" rx="6" fill="#F3F0F7"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#1B3A4B">
+    <text x="284" y="126">Consulta</text>
+    <text x="284" y="314">Análisis</text>
+    <text x="284" y="504">Apoyo</text>
+    <text x="284" y="662">Gestión del fondo</text>
+    <text x="284" y="862">Administración</text>
+  </g>
+
+  <g fill="none" stroke="#1B3A4B" stroke-width="1.4">
+    <path d="M124 146 H1540"/>
+    <path d="M400 146 V190"/><path d="M590 146 V190"/><path d="M780 146 V190"/><path d="M970 146 V190"/>
+    <path d="M1160 146 V190"/><path d="M1350 146 V190"/><path d="M1540 146 V190"/>
+
+    <path d="M124 334 H970"/>
+    <path d="M400 334 V386"/><path d="M590 334 V386"/><path d="M780 334 V386"/><path d="M970 334 V386"/>
+
+    <path d="M124 682 H1540"/>
+    <path d="M400 682 V726"/><path d="M590 682 V726"/><path d="M780 682 V726"/><path d="M970 682 V726"/>
+    <path d="M1160 682 V726"/><path d="M1350 682 V726"/><path d="M1540 682 V726"/>
+
+    <path d="M124 882 H780"/>
+    <path d="M400 882 V926"/><path d="M590 882 V926"/><path d="M780 882 V926"/>
+  </g>
+
+  <g fill="none" stroke="#1B3A4B" stroke-width="1.5" stroke-dasharray="7 4">
+    <path d="M900 764 H875 V691 A9 9 0 0 0 875 673 V612 H610 V474"/>
+    <path d="M900 540 H642 V466"/>
+    <path d="M1350 266 V484"/>
+    <path d="M1610 228 H1660 V540 H1438"/>
+    <path d="M780 462 V476 H1264 V540 H1276"/>
+  </g>
+  <g fill="none" stroke="#1B3A4B" stroke-width="1.5" marker-end="url(#vto)">
+    <path d="M610 474 V458"/>
+    <path d="M642 466 V445"/>
+    <path d="M1350 484 V506"/>
+    <path d="M1438 540 H1416"/>
+    <path d="M1276 540 H1284"/>
+  </g>
+
+  <g font-family="Arial, sans-serif" font-size="11" fill="#1B3A4B" text-anchor="middle">
+    <rect x="688" y="604" width="64" height="14" fill="#F7FAFC"/>
+    <text x="720" y="615">«include»</text>
+    <rect x="730" y="508" width="58" height="14" fill="#FFF6DE"/>
+    <text x="759" y="519">«extend»</text>
+    <text x="759" y="566" font-size="10" font-style="italic">digitalizado o sin texto</text>
+    <rect x="1366" y="360" width="64" height="14" fill="#F7FAFC"/>
+    <text x="1398" y="371">«include»</text>
+    <rect x="1508" y="512" width="64" height="14" fill="#FFF6DE"/>
+    <text x="1540" y="523">«include»</text>
+    <rect x="1048" y="460" width="64" height="14" fill="#F7FAFC"/>
+    <text x="1080" y="471">«include»</text>
+  </g>
+
+  <g fill="#ffffff" stroke="#1B3A4B" stroke-width="1.5">
+    <ellipse cx="400" cy="228" rx="70" ry="38"/>
+    <ellipse cx="590" cy="228" rx="70" ry="38"/>
+    <ellipse cx="780" cy="228" rx="70" ry="38"/>
+    <ellipse cx="970" cy="228" rx="70" ry="38"/>
+    <ellipse cx="1160" cy="228" rx="70" ry="38"/>
+    <ellipse cx="1350" cy="228" rx="70" ry="38"/>
+    <ellipse cx="1540" cy="228" rx="70" ry="38"/>
+
+    <ellipse cx="400" cy="424" rx="70" ry="38"/>
+    <ellipse cx="590" cy="424" rx="70" ry="38"/>
+    <ellipse cx="780" cy="424" rx="70" ry="38"/>
+    <ellipse cx="970" cy="424" rx="70" ry="38"/>
+
+    <ellipse cx="400" cy="764" rx="70" ry="38"/>
+    <ellipse cx="590" cy="764" rx="70" ry="38"/>
+    <ellipse cx="780" cy="764" rx="70" ry="38"/>
+    <ellipse cx="970" cy="764" rx="70" ry="38"/>
+    <ellipse cx="1160" cy="764" rx="70" ry="38"/>
+    <ellipse cx="1350" cy="764" rx="70" ry="38"/>
+    <ellipse cx="1540" cy="764" rx="70" ry="38"/>
+
+    <ellipse cx="400" cy="964" rx="70" ry="38"/>
+    <ellipse cx="590" cy="964" rx="70" ry="38"/>
+    <ellipse cx="780" cy="964" rx="70" ry="38"/>
+  </g>
+  <g fill="#FFF6DE" stroke="#1B3A4B" stroke-width="1.5">
+    <ellipse cx="970" cy="540" rx="70" ry="38"/>
+    <ellipse cx="1350" cy="540" rx="70" ry="38"/>
+  </g>
+
+  <g font-family="Arial, sans-serif" font-size="11" fill="#1B3A4B" text-anchor="middle">
+    <text x="400" y="222" font-weight="700">UC-01</text><text x="400" y="236">Autenticarse</text>
+    <text x="590" y="214" font-weight="700">UC-02</text><text x="590" y="228">Consultar</text><text x="590" y="242">notificaciones</text>
+    <text x="780" y="214" font-weight="700">UC-03</text><text x="780" y="228">Consultar</text><text x="780" y="242">tablero</text>
+    <text x="970" y="214" font-weight="700">UC-04</text><text x="970" y="228">Consultar</text><text x="970" y="242">expedientes</text>
+    <text x="1160" y="214" font-weight="700">UC-05</text><text x="1160" y="228">Descargar</text><text x="1160" y="242">versión</text>
+    <text x="1350" y="214" font-weight="700">UC-06</text><text x="1350" y="228">Buscar en</text><text x="1350" y="242">el fondo</text>
+    <text x="1540" y="214" font-weight="700">UC-07</text><text x="1540" y="228">Preguntar al</text><text x="1540" y="242">asistente</text>
+
+    <text x="400" y="410" font-weight="700">UC-08</text><text x="400" y="424">Clasificar</text><text x="400" y="438">documento</text>
+    <text x="590" y="410" font-weight="700">UC-09</text><text x="590" y="424">Procesar</text><text x="590" y="438">documento</text>
+    <text x="780" y="410" font-weight="700">UC-10</text><text x="780" y="424">Generar</text><text x="780" y="438">resumen</text>
+    <text x="970" y="410" font-weight="700">UC-11</text><text x="970" y="424">Consultar</text><text x="970" y="438">texto extraído</text>
+
+    <text x="400" y="750" font-weight="700">UC-12</text><text x="400" y="764">Registrar</text><text x="400" y="778">expediente</text>
+    <text x="590" y="750" font-weight="700">UC-13</text><text x="590" y="764">Transicionar</text><text x="590" y="778">estado</text>
+    <text x="780" y="750" font-weight="700">UC-14</text><text x="780" y="764">Asignar</text><text x="780" y="778">participantes</text>
+    <text x="970" y="750" font-weight="700">UC-15</text><text x="970" y="764">Cargar y</text><text x="970" y="778">versionar</text>
+    <text x="1160" y="750" font-weight="700">UC-16</text><text x="1160" y="764">Archivar</text><text x="1160" y="778">documento</text>
+    <text x="1350" y="750" font-weight="700">UC-17</text><text x="1350" y="764">Administrar</text><text x="1350" y="778">categorías</text>
+    <text x="1540" y="750" font-weight="700">UC-18</text><text x="1540" y="764">Consultar</text><text x="1540" y="778">trazabilidad</text>
+
+    <text x="400" y="950" font-weight="700">UC-19</text><text x="400" y="964">Gestionar</text><text x="400" y="978">usuarios</text>
+    <text x="590" y="950" font-weight="700">UC-20</text><text x="590" y="964">Gestionar</text><text x="590" y="978">roles</text>
+    <text x="780" y="950" font-weight="700">UC-21</text><text x="780" y="964">Consultar</text><text x="780" y="978">auditoría</text>
+
+    <text x="970" y="526" font-weight="700">UC-23</text><text x="970" y="540">Extraer texto</text><text x="970" y="554">por OCR</text>
+    <text x="1350" y="526" font-weight="700">UC-22</text><text x="1350" y="540">Registrar</text><text x="1350" y="554">evidencia</text>
+  </g>
+
+  <g fill="none" stroke="#1B3A4B" stroke-width="1.6" stroke-linecap="round">
+    <circle cx="100" cy="124" r="11"/>
+    <path d="M100 135 V164 M78 146 H124 M100 164 L82 188 M100 164 L118 188"/>
+    <circle cx="100" cy="312" r="11"/>
+    <path d="M100 323 V352 M78 334 H124 M100 352 L82 376 M100 352 L118 376"/>
+    <circle cx="100" cy="660" r="11"/>
+    <path d="M100 671 V700 M78 682 H124 M100 700 L82 724 M100 700 L118 724"/>
+    <circle cx="100" cy="860" r="11"/>
+    <path d="M100 871 V900 M78 882 H124 M100 900 L82 924 M100 900 L118 924"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#1B3A4B" text-anchor="middle">
+    <text x="100" y="212">Usuario</text><text x="100" y="226">consultor</text>
+    <text x="100" y="416">Especialista</text>
+    <text x="100" y="748">Responsable</text><text x="100" y="762">documental</text>
+    <text x="100" y="948">Administrador</text>
+  </g>
+  <g fill="none" stroke="#1B3A4B" stroke-width="1.4" marker-end="url(#gen)">
+    <path d="M36 290 V204"/>
+    <path d="M36 636 V392"/>
+    <path d="M36 836 V740"/>
+  </g>
+
+  <g fill="none" stroke="#1B3A4B" stroke-width="1.35" stroke-linejoin="round">
+    <path d="M330 228 H246 V155 A9 9 0 0 0 246 137 V100 H1864"/>
+    <path d="M330 964 H214 V891 A9 9 0 0 0 214 873 V691 A9 9 0 0 0 214 673 V343 A9 9 0 0 0 214 325 V155 A9 9 0 0 0 214 137 V100 H246"/>
+    <path d="M1610 228 H1864"/>
+    <path d="M1420 248 V300 H1748 V424 H1864"/>
+    <path d="M970 578 V630 H1864"/>
+    <path d="M1160 266 V288 H1411 A9 9 0 0 1 1429 288 H1800 V621 A9 9 0 0 1 1800 639 V830 H1864"/>
+    <path d="M970 802 V830 H1800"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="10" fill="#1B3A4B" text-anchor="middle">
+    <rect x="1460" y="84" width="88" height="14" fill="#F7FAFC"/>
+    <text x="1504" y="95">UC-01 · UC-19</text>
+    <rect x="1688" y="212" width="88" height="14" fill="#F7FAFC"/>
+    <text x="1732" y="223">UC-07 · UC-10</text>
+    <rect x="1660" y="392" width="88" height="14" fill="#F7FAFC"/>
+    <text x="1704" y="403">UC-06 · UC-09</text>
+    <rect x="1488" y="614" width="40" height="14" fill="#F7FAFC"/>
+    <text x="1508" y="625">UC-23</text>
+    <rect x="1208" y="814" width="88" height="14" fill="#F7FAFC"/>
+    <text x="1252" y="825">UC-05 · UC-15</text>
+  </g>
+
+  <g fill="none" stroke="#1B3A4B" stroke-width="1.5" stroke-linecap="round">
+    <circle cx="1892" cy="78" r="10"/><path d="M1892 88 V116 M1872 100 H1912 M1892 116 L1876 138 M1892 116 L1908 138"/>
+    <circle cx="1892" cy="206" r="10"/><path d="M1892 216 V244 M1872 228 H1912 M1892 244 L1876 266 M1892 244 L1908 266"/>
+    <circle cx="1892" cy="402" r="10"/><path d="M1892 412 V440 M1872 424 H1912 M1892 440 L1876 462 M1892 440 L1908 462"/>
+    <circle cx="1892" cy="606" r="10"/><path d="M1892 616 V644 M1872 628 H1912 M1892 644 L1876 666 M1892 644 L1908 666"/>
+    <circle cx="1892" cy="808" r="10"/><path d="M1892 818 V846 M1872 830 H1912 M1892 846 L1876 868 M1892 846 L1908 868"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#1B3A4B" text-anchor="middle">
+    <text x="1892" y="156">Correo</text>
+    <text x="1892" y="284">Modelo de</text><text x="1892" y="298">lenguaje</text>
+    <text x="1892" y="480">Índice</text><text x="1892" y="494">semántico</text>
+    <text x="1892" y="684">Motor OCR</text>
+    <text x="1892" y="886">Almacenamiento</text>
+  </g>
+
+  <rect x="960" y="918" width="640" height="78" rx="4" fill="#ffffff" stroke="#1B3A4B"/>
+  <g font-family="Arial, sans-serif" font-size="11" fill="#1B3A4B">
+    <line x1="976" y1="938" x2="1016" y2="938" stroke="#1B3A4B" stroke-width="1.4"/>
+    <text x="1024" y="942">asociación del actor con cada caso</text>
+    <line x1="976" y1="958" x2="1016" y2="958" stroke="#1B3A4B" stroke-width="1.5" stroke-dasharray="7 4"/>
+    <text x="1024" y="962">la punta señala el caso incluido o el caso base</text>
+    <line x1="976" y1="978" x2="1016" y2="978" stroke="#1B3A4B" stroke-width="1.4" marker-end="url(#gen)"/>
+    <text x="1024" y="982">generalización: la flecha apunta al actor general</text>
+  </g>
+</svg>

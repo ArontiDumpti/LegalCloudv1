@@ -1,0 +1,51 @@
+@startuml contexto-legalcloud-ai
+!pragma layout smetana
+title Diagrama de contexto - LegalCloud AI
+
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam dpi 160
+skinparam defaultFontName Arial
+skinparam titleFontSize 16
+skinparam titleFontColor #1B3A4B
+skinparam ArrowColor #1B3A4B
+skinparam ArrowFontSize 11
+skinparam ActorBorderColor #1B3A4B
+skinparam ActorFontSize 12
+skinparam ActorFontColor #1B3A4B
+skinparam rectangleBorderColor #1B3A4B
+skinparam rectangleFontColor #1B3A4B
+skinparam rectangleFontSize 14
+
+left to right direction
+
+actor "Administrador" as admin
+actor "Responsable\ndocumental" as responsable
+actor "Especialista /\nanalista" as especialista
+actor "Usuario\nconsultor" as consultor
+
+rectangle "LegalCloud AI\n<size:12>API v1 · frontera del sistema</size>" as sistema #F4F7FB
+
+actor "Almacenamiento\nde objetos" as storage <<sistema externo>>
+actor "Motor OCR" as ocr <<sistema externo>>
+actor "Índice de\nembeddings" as embeddings <<sistema externo>>
+actor "Modelo de\nlenguaje" as llm <<sistema externo>>
+actor "Correo\nelectrónico" as correo <<sistema externo>>
+
+admin --> sistema : identidad, roles\ny auditoría
+responsable --> sistema : expedientes,\ndocumentos y versiones
+especialista --> sistema : clasificación,\nprocesamiento y resúmenes
+consultor --> sistema : consulta, búsqueda\ny preguntas
+
+sistema --> storage : URL prefirmada\nde carga y descarga
+sistema --> ocr : extracción de texto\nen documentos digitalizados
+sistema --> embeddings : fragmentos e\níndice semántico
+sistema --> llm : respuesta RAG\ny resumen con fuentes
+sistema --> correo : invitación y\nrecuperación de acceso
+
+note bottom of sistema
+  La organización se resuelve con el claim org_id del JWT.
+  El binario no atraviesa la API: se confirma por hash
+  y la evidencia de cada consulta queda registrada.
+end note
+@enduml
