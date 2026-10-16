@@ -57,6 +57,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/expedientes/{expedienteId}/documentos/archivo', [DocumentoApiController::class, 'subirDirecto']);
         Route::post('/expedientes/{expedienteId}/documentos', [DocumentoApiController::class, 'iniciar']);
 
+        Route::post('/documentos/archivo', [DocumentoApiController::class, 'subirAlAcervo']);
         Route::get('/documentos/{documentoId}', [DocumentoApiController::class, 'show']);
         Route::patch('/documentos/{documentoId}', [DocumentoApiController::class, 'update']);
         Route::post('/documentos/{documentoId}/archivar', [DocumentoApiController::class, 'archivar']);

@@ -57,6 +57,35 @@ test('el administrador puede listar usuarios por la api', function () {
         ->assertJsonPath('paginacion.limit', 5);
 });
 
+test('el consultor puede cargar un pdf por la api', function () {
+    $this->seed(LegalCloudSeeder::class);
+
+    $token = $this->postJson('/api/v1/auth/iniciar-sesion', [
+        'correo' => 'consultor@legalcloud.com',
+        'contrasena' => 'password',
+    ])->json('accessToken');
+
+    expect($this->withToken($token)->getJson('/api/v1/auth/yo')->json('permisos'))
+        ->toContain('documentos.crear');
+
+    $expedienteId = $this->withToken($token)
+        ->getJson('/api/v1/expedientes')
+        ->assertOk()
+        ->json('datos.0.id');
+
+    $pdf = "%PDF-1.1\nstream\n(Texto de prueba del consultor) Tj\nendstream\n%%EOF";
+    $archivo = Illuminate\Http\UploadedFile::fake()->createWithContent('consulta.pdf', $pdf);
+
+    $this->withToken($token)
+        ->post("/api/v1/expedientes/{$expedienteId}/documentos/archivo", [
+            'titulo' => 'PDF del consultor',
+            'tipo' => 'oficio',
+            'archivo' => $archivo,
+        ], ['Accept' => 'application/json'])
+        ->assertCreated()
+        ->assertJsonPath('titulo', 'PDF del consultor');
+});
+
 test('el administrador puede cargar un pdf y aparece en el expediente', function () {
     $this->seed(LegalCloudSeeder::class);
 

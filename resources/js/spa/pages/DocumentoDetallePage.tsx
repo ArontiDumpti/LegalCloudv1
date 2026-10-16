@@ -57,8 +57,8 @@ export default function DocumentoDetallePage({ id, onError, perfil }: { id: stri
             </button>
             <div>
                 <h1 className="font-display text-3xl font-bold">{doc.titulo}</h1>
-                <div className="mt-2 flex gap-2">
-                    {badge(doc.tipo)}
+                <div className="mt-2 flex flex-wrap gap-2">
+                    {doc.categoriaNombre && badge(doc.categoriaNombre)}
                     {badge(doc.estadoProcesamiento)}
                 </div>
             </div>

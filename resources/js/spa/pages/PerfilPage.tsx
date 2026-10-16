@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { api } from '../api';
-import { badge, capturar } from '../ui';
+import { badge, capturar, CampoContrasena } from '../ui';
 import type { Perfil } from '../types';
 
 export default function PerfilPage({ perfil, onError }: { perfil: Perfil; onError: (m: string) => void }) {
@@ -41,8 +41,8 @@ export default function PerfilPage({ perfil, onError }: { perfil: Perfil; onErro
             </article>
             <form onSubmit={(e) => void cambiar(e)} className="grid max-w-md gap-3 rounded-2xl border border-mist bg-white p-5">
                 <h2 className="font-semibold">Cambiar contraseña</h2>
-                <input className="h-10 rounded-lg border px-3" type="password" value={actual} onChange={(e) => setActual(e.target.value)} placeholder="Actual" />
-                <input className="h-10 rounded-lg border px-3" type="password" value={nueva} onChange={(e) => setNueva(e.target.value)} placeholder="Nueva (mín. 8)" minLength={8} />
+                <CampoContrasena valor={actual} onCambio={setActual} placeholder="Actual" autoComplete="current-password" />
+                <CampoContrasena valor={nueva} onCambio={setNueva} placeholder="Nueva (mín. 8)" autoComplete="new-password" minLength={8} />
                 <button className="rounded-full bg-navy px-4 py-2 text-sm font-semibold text-white">Guardar</button>
                 {ok && <p className="text-sm text-green-700">Contraseña actualizada.</p>}
             </form>

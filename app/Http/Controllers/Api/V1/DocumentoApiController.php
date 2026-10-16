@@ -92,11 +92,17 @@ class DocumentoApiController extends Controller
 
         $datos = $request->validate([
             'titulo' => ['nullable', 'string', 'max:240'],
-            'tipo' => ['required', 'string'],
+            'tipo' => ['nullable', 'string'],
+            'categoriaId' => ['nullable', 'string'],
             'archivo' => ['required', 'file', 'max:20480'],
         ]);
 
         $expediente = Expediente::query()->findOrFail(LegalCloudApi::parseId($expedienteId));
+        $categoriaId = isset($datos['categoriaId']) && $datos['categoriaId'] !== ''
+            ? LegalCloudApi::parseId($datos['categoriaId'])
+            : $expediente->categoria_id;
+        $categoria = $categoriaId ? \App\Models\Categoria::query()->find($categoriaId) : null;
+        $tipo = $datos['tipo'] ?: ($categoria?->slug ?: 'otro');
         $archivo = $request->file('archivo');
         $binario = file_get_contents($archivo->getRealPath()) ?: '';
         $texto = trim(PdfSimple::extraer($binario));
@@ -108,10 +114,10 @@ class DocumentoApiController extends Controller
 
         $documento = Documento::create([
             'expediente_id' => $expediente->id,
-            'categoria_id' => $expediente->categoria_id,
+            'categoria_id' => $categoriaId,
             'codigo' => $codigo,
             'titulo' => $datos['titulo'] ?: pathinfo($archivo->getClientOriginalName(), PATHINFO_FILENAME),
-            'tipo' => $datos['tipo'],
+            'tipo' => LegalCloudApi::tipoDocumento($tipo),
             'archivo_nombre' => $archivo->getClientOriginalName(),
             'archivo_ruta' => $ruta,
             'mime' => $archivo->getMimeType() ?: 'application/pdf',
@@ -140,6 +146,26 @@ class DocumentoApiController extends Controller
         AuditoriaLogger::registrar('documento.subir', 'documentos', $documento->codigo);
 
         return LegalCloudApi::json(LegalCloudApi::documento($documento->fresh()), 201);
+    }
+
+    public function subirAlAcervo(Request $request, IngestionService $ingesta): JsonResponse
+    {
+        LegalCloudApi::exige($request->user(), 'documentos.crear');
+
+        $expediente = Expediente::query()->firstOrCreate(
+            ['codigo' => 'EXP-ACERVO'],
+            [
+                'titulo' => 'Acervo documental',
+                'descripcion' => 'Documentos cargados desde Documentos.',
+                'estado' => 'abierto',
+                'prioridad' => 'media',
+                'responsable_id' => $request->user()->id,
+                'creado_por' => $request->user()->id,
+                'fecha_apertura' => now(),
+            ]
+        );
+
+        return $this->subirDirecto($request, LegalCloudApi::uuid($expediente->id), $ingesta);
     }
 
     public function recibirCarga(Request $request, string $token): Response

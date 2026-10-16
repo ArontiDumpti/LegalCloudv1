@@ -12,7 +12,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
 endobj
 5 0 obj
-<< /Length 3615 >>
+<< /Length 3613 >>
 stream
 0.067 0.227 0.431 rg
 50 742 512 28 re f
@@ -98,18 +98,18 @@ BT
 /F1 10 Tf
 0 -15 Td
 (La solicitud podr\341 ser firmada por:) Tj
-/F1 10 Tf
+/F2 12 Tf
 0 -15 Td
 (1. El interesado, de manera manuscrita o con firma electr\363nica avanzada.) Tj
-/F1 10 Tf
+/F2 12 Tf
 0 -15 Td
 (2. Un apoderado, siempre que acredite poder especial o general suficiente.) Tj
-/F1 10 Tf
+/F2 12 Tf
 0 -15 Td
-(3. El representante legal de una persona jur\355dica, con certificado de existencia y) Tj
-/F1 10 Tf
+(3. El representante legal de una persona jur\355dica, con certificado de) Tj
+/F2 12 Tf
 0 -15 Td
-(representaci\363n legal vigente no mayor a treinta \(30\) d\355as.) Tj
+(existencia y representaci\363n legal vigente no mayor a treinta \(30\) d\355as.) Tj
 /F1 10 Tf
 0 -15 Td
 ( ) Tj
@@ -122,31 +122,34 @@ BT
 /F1 10 Tf
 0 -15 Td
 (presentar, de manera completa, los siguientes requisitos:) Tj
-/F1 10 Tf
+/F2 12 Tf
 0 -15 Td
-(1. Solicitud escrita, f\355sica o digital, dirigida a la dependencia competente, con) Tj
-/F1 10 Tf
+(1. Solicitud escrita, f\355sica o digital, dirigida a la dependencia competente,) Tj
+/F2 12 Tf
 0 -15 Td
-(identificaci\363n del tr\341mite solicitado.) Tj
-/F1 10 Tf
+(con identificaci\363n del tr\341mite solicitado.) Tj
+/F2 12 Tf
 0 -15 Td
-(2. Copia del documento de identidad del interesado o, en caso de persona jur\355dica,) Tj
-/F1 10 Tf
+(2. Copia del documento de identidad del interesado o, en caso de persona) Tj
+/F2 12 Tf
 0 -15 Td
-(certificado de existencia y representaci\363n legal.) Tj
-/F1 10 Tf
+(jur\355dica, certificado de existencia y representaci\363n legal.) Tj
+/F2 12 Tf
 0 -15 Td
 (3. Formulario oficial del tr\341mite, debidamente diligenciado y firmado.) Tj
-/F1 10 Tf
+/F2 12 Tf
 0 -15 Td
-(4. Soportes que acrediten los hechos o derechos invocados, en formato PDF o imagen legible.) Tj
-/F1 10 Tf
+(4. Soportes que acrediten los hechos o derechos invocados, en formato PDF o) Tj
+/F2 12 Tf
+0 -15 Td
+(imagen legible.) Tj
+/F2 12 Tf
 0 -15 Td
 (5. Comprobante de pago de la tasa administrativa, cuando el tr\341mite lo exija.) Tj
-/F1 10 Tf
+/F2 12 Tf
 0 -15 Td
 (6. Poder o autorizaci\363n, si act\372a un tercero en nombre del interesado.) Tj
-/F1 10 Tf
+/F2 12 Tf
 0 -15 Td
 (7. Direcci\363n f\355sica y correo electr\363nico para notificaciones.) Tj
 /F1 10 Tf
@@ -161,9 +164,6 @@ BT
 /F2 12 Tf
 0 -15 Td
 (siguientes. Vencido el t\351rmino sin respuesta, se entender\341 desistida.) Tj
-/F1 10 Tf
-0 -15 Td
-( ) Tj
 ET
 0.25 0.35 0.55 rg
 BT
@@ -178,7 +178,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 5 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
 endobj
 7 0 obj
-<< /Length 1522 >>
+<< /Length 1548 >>
 stream
 0.067 0.227 0.431 rg
 50 742 512 28 re f
@@ -192,8 +192,11 @@ ET
 50 48 512 1.2 re f
 0 0 0 rg
 BT
-/F2 12 Tf
+/F1 10 Tf
 62 710 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
 (Art\355culo 15. Clasificaci\363n y expediente.) Tj
 /F1 10 Tf
 0 -15 Td
@@ -258,10 +261,10 @@ xref
 0000000121 00000 n 
 0000000218 00000 n 
 0000000320 00000 n 
-0000003987 00000 n 
-0000004123 00000 n 
-0000005697 00000 n 
+0000003985 00000 n 
+0000004121 00000 n 
+0000005721 00000 n 
 trailer << /Size 9 /Root 1 0 R >>
 startxref
-5833
+5857
 %%EOF

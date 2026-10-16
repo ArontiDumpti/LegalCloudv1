@@ -1,0 +1,630 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R 10 0 R 12 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Length 2981 >>
+stream
+0.067 0.227 0.431 rg
+50 742 512 28 re f
+1 1 1 rg
+BT
+/F2 12 Tf
+62 752 Td
+(LEGALCLOUD AI) Tj
+ET
+0.067 0.227 0.431 rg
+50 48 512 1.2 re f
+0 0 0 rg
+BT
+/F2 12 Tf
+62 710 Td
+(Instalar LegalCloud en otra computadora) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Esta gu\355a es para instalar LegalCloud AI en OTRA computadora con Windows. En el PDF) Tj
+/F1 10 Tf
+0 -15 Td
+(seleccione el comando \(la l\355nea que empieza con COPIAR\), pulse Ctrl+C y p\351guelo en la) Tj
+/F1 10 Tf
+0 -15 Td
+(terminal con clic derecho. Un comando a la vez.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(FORMA M\301S F\301CIL \(recomendado\)) Tj
+/F1 10 Tf
+0 -15 Td
+(Si le pasaron la carpeta LegalCloud-listo \(USB, Drive o Discord\):) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(1. Copie TODA la carpeta a la otra PC \(por ejemplo a C:\\LegalCloud-listo\).) Tj
+/F2 12 Tf
+0 -15 Td
+(2. Abra la carpeta.) Tj
+/F2 12 Tf
+0 -15 Td
+(3. Doble clic en INICIAR.bat) Tj
+/F2 12 Tf
+0 -15 Td
+(4. Se abre el navegador en http://127.0.0.1:8000/app) Tj
+/F2 12 Tf
+0 -15 Td
+(5. Entre con admin@legalcloud.com y clave password) Tj
+/F2 12 Tf
+0 -15 Td
+(6. NO cierre la ventana negra. Esa ventana es el servidor.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(No necesita Git, Composer, Node ni winget.) Tj
+/F1 10 Tf
+0 -15 Td
+(Si INICIAR.bat dice que falta PHP, doble clic en INSTALAR.bat y luego otra vez INICIAR.bat.) Tj
+/F1 10 Tf
+0 -15 Td
+(Si pide VCRUNTIME140.dll, instale https://aka.ms/vs/17/release/vc_redist.x64.exe y vuelva a) Tj
+/F1 10 Tf
+0 -15 Td
+(INICIAR.bat.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Si NO tiene esa carpeta, siga desde el paso 1.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(1. ABRIR LA TERMINAL CORRECTA) Tj
+/F1 10 Tf
+0 -15 Td
+(Abra "S\355mbolo del sistema" \(cmd\). No use PowerShell si un comando "no se reconoce".) Tj
+/F1 10 Tf
+0 -15 Td
+(En Inicio escriba cmd y pulse Enter.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(2. PROGRAMAS \(solo si faltan\)) Tj
+/F1 10 Tf
+0 -15 Td
+(Primero compruebe. Seleccione, Ctrl+C, p\351guelo en cmd:) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: git --version) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: php -v) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: node -v) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: npm -v) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Si escribe solo git y sale "usage: git...", Git YA est\341.) Tj
+/F1 10 Tf
+0 -15 Td
+(PHP debe ser 8.3 o 8.5. Si es 8.2 o menos, instale PHP otra vez.) Tj
+/F1 10 Tf
+0 -15 Td
+(Si dice que no se reconoce, instale ese programa, CIERRE cmd y abra otro.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Instalar con winget \(en cmd tambi\351n sirve\):) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 1 - Git) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: winget install --id Git.Git -e --accept-package-agreements) Tj
+/F2 12 Tf
+0 -15 Td
+(--accept-source-agreements) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 2 - PHP 8.5) Tj
+ET
+0.25 0.35 0.55 rg
+BT
+/F1 8 Tf
+260 32 Td
+(P\341gina 1 de 4) Tj
+ET
+
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 5 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
+endobj
+7 0 obj
+<< /Length 2701 >>
+stream
+0.067 0.227 0.431 rg
+50 742 512 28 re f
+1 1 1 rg
+BT
+/F2 12 Tf
+62 752 Td
+(LEGALCLOUD AI) Tj
+ET
+0.067 0.227 0.431 rg
+50 48 512 1.2 re f
+0 0 0 rg
+BT
+/F2 12 Tf
+62 710 Td
+(COPIAR: winget install --id PHP.PHP.8.5 -e --accept-package-agreements) Tj
+/F2 12 Tf
+0 -15 Td
+(--accept-source-agreements) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 3 - Composer NO est\341 en winget. PHP debe funcionar. Luego:) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: curl.exe -L https://getcomposer.org/Composer-Setup.exe -o) Tj
+/F2 12 Tf
+0 -15 Td
+(%TEMP%\\Composer-Setup.exe) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: %TEMP%\\Composer-Setup.exe) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Se abre el instalador. Siguiente, siguiente. Cierre cmd. Abra otro.) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: composer -V) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 4 - Node.js) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: winget install --id OpenJS.NodeJS.LTS -e --accept-package-agreements) Tj
+/F2 12 Tf
+0 -15 Td
+(--accept-source-agreements) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Cierre cmd y abra otro. Vuelva a comprobar git, php, composer, node y npm.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Si no quiere winget, descargue a mano:) Tj
+/F1 10 Tf
+0 -15 Td
+(Git: https://git-scm.com/download/win) Tj
+/F1 10 Tf
+0 -15 Td
+(PHP 8.3 o 8.5: https://windows.php.net/download/) Tj
+/F1 10 Tf
+0 -15 Td
+(Composer: https://getcomposer.org/download/ \(Composer-Setup.exe\)) Tj
+/F1 10 Tf
+0 -15 Td
+(Node.js LTS: https://nodejs.org) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(3. SI YA EST\301 EN C:\\repo\\LegalCloud) Tj
+/F1 10 Tf
+0 -15 Td
+(Solo encender:) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: cd /d C:\\repo\\LegalCloud) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: php artisan serve --host=127.0.0.1 --port=8000) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(No cierre esa ventana. Navegador: http://127.0.0.1:8000/app) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Si hay c\363digo nuevo en GitHub:) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: cd /d C:\\repo\\LegalCloud) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: git pull) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: composer install) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: npm install) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: php artisan migrate) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: npm run build) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: php artisan serve --host=127.0.0.1 --port=8000) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(4. PRIMERA VEZ \(a\372n no est\341 el proyecto\)) Tj
+/F1 10 Tf
+0 -15 Td
+(Use S\355mbolo del sistema \(cmd\). Un comando por vez.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 7) Tj
+ET
+0.25 0.35 0.55 rg
+BT
+/F1 8 Tf
+260 32 Td
+(P\341gina 2 de 4) Tj
+ET
+
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 7 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
+endobj
+9 0 obj
+<< /Length 2112 >>
+stream
+0.067 0.227 0.431 rg
+50 742 512 28 re f
+1 1 1 rg
+BT
+/F2 12 Tf
+62 752 Td
+(LEGALCLOUD AI) Tj
+ET
+0.067 0.227 0.431 rg
+50 48 512 1.2 re f
+0 0 0 rg
+BT
+/F2 12 Tf
+62 710 Td
+(COPIAR: cd /d C:\\) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 8) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: if not exist repo mkdir repo) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 9) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: cd /d C:\\repo) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 10) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: git clone https://github.com/ArontiDumpti/LegalCloudv1.git LegalCloud) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Si el clone falla:) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: git clone https://github.com/neutrosomar/LegalCloudv1.git LegalCloud) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 11) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: cd /d C:\\repo\\LegalCloud) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 12) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: copy .env.example .env) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 13) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: if not exist database\\database.sqlite type nul >) Tj
+/F2 12 Tf
+0 -15 Td
+(database\\database.sqlite) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 14) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: composer install) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 15) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: npm install) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 16) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: php artisan key:generate) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 17) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: php artisan migrate) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 18) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: php artisan db:seed --class=LegalCloudSeeder) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 19) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: php artisan storage:link) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 20) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: npm run build) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 21 - Encender. NO cierre esta ventana.) Tj
+ET
+0.25 0.35 0.55 rg
+BT
+/F1 8 Tf
+260 32 Td
+(P\341gina 3 de 4) Tj
+ET
+
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 9 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
+endobj
+11 0 obj
+<< /Length 1720 >>
+stream
+0.067 0.227 0.431 rg
+50 742 512 28 re f
+1 1 1 rg
+BT
+/F2 12 Tf
+62 752 Td
+(LEGALCLOUD AI) Tj
+ET
+0.067 0.227 0.431 rg
+50 48 512 1.2 re f
+0 0 0 rg
+BT
+/F2 12 Tf
+62 710 Td
+(COPIAR: php artisan serve --host=127.0.0.1 --port=8000) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(PASO 22 - En OTRA ventana cmd:) Tj
+/F2 12 Tf
+0 -15 Td
+(COPIAR: start http://127.0.0.1:8000/app) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(No use http://localhost sin :8000.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(5. CUENTAS \(contrase\361a de todos: password\)) Tj
+/F1 10 Tf
+0 -15 Td
+(admin@legalcloud.com - Administradora) Tj
+/F1 10 Tf
+0 -15 Td
+(documental@legalcloud.com - Documentos) Tj
+/F1 10 Tf
+0 -15 Td
+(analista@legalcloud.com - Especialista) Tj
+/F1 10 Tf
+0 -15 Td
+(consultor@legalcloud.com - Solo consulta) Tj
+/F1 10 Tf
+0 -15 Td
+(williams@legalcloud.com - Administrador) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F2 12 Tf
+0 -15 Td
+(6. SI ALGO FALLA) Tj
+/F1 10 Tf
+0 -15 Td
+(- "no se reconoce": est\341 en PowerShell o falta el programa. Use cmd, o la carpeta) Tj
+/F1 10 Tf
+0 -15 Td
+(LegalCloud-listo.) Tj
+/F1 10 Tf
+0 -15 Td
+(- Composer no se encuentra con winget: es normal. Use Composer-Setup.exe \(paso 3\).) Tj
+/F1 10 Tf
+0 -15 Td
+(- php no se reconoce: C:\\xampp\\php\\php.exe o instale PHP 8.5 y abra otro cmd.) Tj
+/F1 10 Tf
+0 -15 Td
+(- P\341gina en blanco: npm run build) Tj
+/F1 10 Tf
+0 -15 Td
+(- ERR_CONNECTION_REFUSED: no est\341 corriendo artisan serve o INICIAR.bat) Tj
+/F1 10 Tf
+0 -15 Td
+(- PowerShell bloquea: use cmd, no PowerShell.) Tj
+/F1 10 Tf
+0 -15 Td
+( ) Tj
+/F1 10 Tf
+0 -15 Td
+(Gu\355a PDF para instalar LegalCloud AI en otra computadora Windows.) Tj
+ET
+0.25 0.35 0.55 rg
+BT
+/F1 8 Tf
+260 32 Td
+(P\341gina 4 de 4) Tj
+ET
+
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 11 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000135 00000 n 
+0000000232 00000 n 
+0000000334 00000 n 
+0000003367 00000 n 
+0000003503 00000 n 
+0000006256 00000 n 
+0000006392 00000 n 
+0000008556 00000 n 
+0000008693 00000 n 
+0000010466 00000 n 
+trailer << /Size 13 /Root 1 0 R >>
+startxref
+10604
+%%EOF

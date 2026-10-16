@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { api } from '../api';
 import { badge, capturar, ir } from '../ui';
-import type { Documento, Expediente, Paginacion, Perfil } from '../types';
+import type { Categoria, Documento, Expediente, Paginacion, Perfil } from '../types';
 
 type Participante = { usuarioId: string; nombre: string; correo?: string; rolEnExpediente: string };
 
@@ -9,8 +9,9 @@ export default function ExpedienteDetallePage({ id, onError, perfil }: { id: str
     const [expediente, setExpediente] = useState<Expediente | null>(null);
     const [documentos, setDocumentos] = useState<Documento[]>([]);
     const [participantes, setParticipantes] = useState<Participante[]>([]);
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
+    const [categoriaId, setCategoriaId] = useState('');
     const [titulo, setTitulo] = useState('');
-    const [tipo, setTipo] = useState('reglamento');
     const [archivo, setArchivo] = useState<File | null>(null);
     const [subiendo, setSubiendo] = useState(false);
     const [listo, setListo] = useState<string | null>(null);
@@ -22,6 +23,9 @@ export default function ExpedienteDetallePage({ id, onError, perfil }: { id: str
         setDocumentos(docs.datos);
         const parts = await api<{ datos: Participante[] }>(`/expedientes/${id}/participantes`);
         setParticipantes(parts.datos);
+        const cats = await api<Paginacion<Categoria>>('/categorias');
+        setCategorias(cats.datos);
+        setCategoriaId(exp.categoriaId || cats.datos[0]?.id || '');
     }
 
     useEffect(() => {
@@ -48,7 +52,9 @@ export default function ExpedienteDetallePage({ id, onError, perfil }: { id: str
         try {
             const datos = new FormData();
             datos.append('titulo', titulo || archivo.name.replace(/\.pdf$/i, ''));
-            datos.append('tipo', tipo);
+            if (categoriaId) {
+                datos.append('categoriaId', categoriaId);
+            }
             datos.append('archivo', archivo);
             const creado = await api<Documento>(`/expedientes/${id}/documentos/archivo`, {
                 method: 'POST',
@@ -96,11 +102,16 @@ export default function ExpedienteDetallePage({ id, onError, perfil }: { id: str
                     <h2 className="font-display text-xl font-bold">Cargar documento</h2>
                     <p className="text-sm text-slate-500">Suba un PDF a este expediente. El texto se extrae al guardar.</p>
                     <input className="h-11 rounded-lg border px-3" placeholder="Título" value={titulo} onChange={(e) => setTitulo(e.target.value)} required />
-                    <select className="h-11 rounded-lg border px-3" value={tipo} onChange={(e) => setTipo(e.target.value)}>
-                        {['reglamento', 'resolucion', 'informe', 'acta', 'contrato', 'oficio', 'otro'].map((t) => (
-                            <option key={t}>{t}</option>
-                        ))}
-                    </select>
+                    <label className="grid gap-1 text-sm font-medium">
+                        Categoría
+                        <select className="h-11 rounded-lg border px-3 font-normal" value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
+                            {categorias.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.nombre}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
                     <label className="grid gap-2 text-sm font-medium">
                         Archivo PDF
                         <input className="rounded-lg border border-mist bg-ice px-3 py-3" type="file" accept=".pdf,.txt,application/pdf" onChange={(e) => setArchivo(e.target.files?.[0] ?? null)} required />
@@ -132,6 +143,7 @@ export default function ExpedienteDetallePage({ id, onError, perfil }: { id: str
                                     <span className="font-semibold">{doc.titulo}</span>
                                     {badge(doc.estadoProcesamiento)}
                                 </div>
+                                {doc.categoriaNombre && <p className="mt-1 text-xs text-slate-500">{doc.categoriaNombre}</p>}
                             </button>
                         </li>
                     ))}

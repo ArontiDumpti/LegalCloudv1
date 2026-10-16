@@ -48,6 +48,7 @@ export type Documento = {
     tipo: string;
     origen: string;
     categoriaId?: string | null;
+    categoriaNombre?: string | null;
     estadoProcesamiento: string;
     versionVigente?: { id: string; numero: number; esVigente: boolean } | null;
     creadoEn: string;

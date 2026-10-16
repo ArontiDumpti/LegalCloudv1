@@ -58,7 +58,7 @@ class LegalCloudApi
             'nombre' => 'Usuario consultor',
             'permisos' => [
                 'dashboard.leer', 'categorias.leer',
-                'expedientes.leer', 'documentos.leer', 'documentos.descargar',
+                'expedientes.leer', 'documentos.leer', 'documentos.crear', 'documentos.descargar',
                 'busqueda.consultar', 'asistente.conversar',
                 'notificaciones.leer',
             ],
@@ -352,6 +352,7 @@ class LegalCloudApi
             'tipo' => self::tipoDocumento($documento->tipo),
             'origen' => 'digital',
             'categoriaId' => $documento->categoria_id ? self::uuid($documento->categoria_id) : null,
+            'categoriaNombre' => $documento->categoria?->nombre,
             'nivelConfidencialidad' => 'interno',
             'estadoProcesamiento' => self::estadoProcesamiento($documento),
             'versionVigente' => $version ? [

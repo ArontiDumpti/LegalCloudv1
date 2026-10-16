@@ -1,0 +1,27 @@
+LegalCloud AI - carpeta para otra computadora
+=============================================
+
+NO use PowerShell para estos pasos. Use doble clic o el
+Simbolo del sistema (cmd).
+
+1. Copie TODA esta carpeta (USB, Discord, Drive o correo).
+2. En la otra PC, haga doble clic en INICIAR.bat
+3. Se abre el navegador en http://127.0.0.1:8000/app
+4. Entre con admin@legalcloud.com y clave password
+5. NO cierre la ventana negra. Esa ventana es el servidor.
+
+Si INICIAR.bat dice que falta PHP, haga doble clic en INSTALAR.bat
+y despues otra vez en INICIAR.bat.
+
+Si PHP no arranca y pide VCRUNTIME140.dll, instale:
+https://aka.ms/vs/17/release/vc_redist.x64.exe
+Luego vuelva a INICIAR.bat
+
+Cuentas (todas con clave password)
+- admin@legalcloud.com
+- documental@legalcloud.com
+- analista@legalcloud.com
+- consultor@legalcloud.com
+
+No necesita Git, Composer, Node ni winget si esta carpeta
+ya viene armada (con php y vendor).

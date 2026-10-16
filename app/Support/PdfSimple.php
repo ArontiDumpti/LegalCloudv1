@@ -108,7 +108,7 @@ class PdfSimple
                 $lineas[] = ['text' => '', 'bold' => false];
                 continue;
             }
-            $esTitulo = (bool) preg_match('/^(Artículo|RESOLUCIÓN|RESUELVE|CONSIDERANDO|Parágrafo|CIRCULAR|CONTRATO)/u', $parrafo);
+            $esTitulo = (bool) preg_match('/^(Artículo|RESOLUCIÓN|RESUELVE|CONSIDERANDO|Parágrafo|CIRCULAR|CONTRATO|\d+\.\s+[A-ZÁÉÍÓÚÑ]|PASO\s+\d+|FORMA MÁS|COPIAR:)/u', $parrafo);
             foreach (self::partir($parrafo, $esTitulo ? 78 : 92) as $trozo) {
                 $lineas[] = ['text' => $trozo, 'bold' => $esTitulo];
             }

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Instalar LegalCloud AI en otra computadora</title>
+    <style>
+        :root { --navy: #0e3a6e; --royal: #114e8b; --ice: #e8f1fa; --mist: #d5e4f2; --ink: #0f172a; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; background: linear-gradient(#f8fbff, #fff); color: var(--ink); }
+        header { background: var(--navy); color: #fff; padding: 22px 28px; }
+        header p { margin: 6px 0 0; opacity: .85; font-size: 14px; }
+        header strong { color: #9fd0ff; }
+        main { max-width: 880px; margin: 0 auto; padding: 28px 20px 72px; }
+        h1 { font-size: 26px; margin: 0 0 8px; }
+        h2 { color: var(--royal); font-size: 20px; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--ice); }
+        p, li { line-height: 1.55; }
+        .aviso, .okbox { border-radius: 14px; padding: 14px 16px; margin: 16px 0 24px; }
+        .aviso { background: #fff4e5; border: 1px solid #f0d9a8; }
+        .okbox { background: #e8f7ee; border: 1px solid #b7e0c4; }
+        .indice { display: grid; gap: 8px; margin: 16px 0 28px; }
+        .indice a { color: var(--royal); font-weight: 600; }
+        .paso { margin: 16px 0 20px; }
+        .paso h3 { margin: 0 0 8px; font-size: 15px; color: var(--navy); }
+        .cmd { display: flex; border: 1px solid var(--mist); border-radius: 12px; overflow: hidden; background: #fff; }
+        .cmd code { flex: 1; padding: 12px 14px; font-family: Consolas, "Courier New", monospace; font-size: 13px; white-space: pre-wrap; word-break: break-all; background: #f4f8fc; }
+        .cmd button { border: 0; min-width: 108px; background: var(--royal); color: #fff; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 14px; }
+        .cmd button:hover { background: var(--navy); }
+        .cmd button.ok { background: #157347; }
+        .cmd svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+        .cuentas { width: 100%; border-collapse: collapse; background: #fff; }
+        .cuentas th, .cuentas td { border: 1px solid var(--mist); padding: 8px 10px; text-align: left; }
+        .cuentas th { background: var(--ice); color: var(--royal); }
+        a { color: var(--royal); }
+        ol.pasos { padding-left: 22px; }
+        .envbox { background: #f4f8fc; border: 1px solid var(--mist); border-radius: 12px; padding: 12px 14px; font-family: Consolas, monospace; font-size: 13px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>LegalCloud <strong>AI</strong></h1>
+        <p>Instalación en otra computadora Windows. Incluye XAMPP (PHP + MySQL). Pulse Copiar y péguelo en el Símbolo del sistema (cmd).</p>
+    </header>
+    <main>
+        <div class="okbox">
+            <b>Antes de empezar.</b> Abra <b>Símbolo del sistema</b> (Inicio → <b>cmd</b> → Enter).
+            No use PowerShell. Copie <b>un comando</b>, clic derecho para pegar, Enter.
+            XAMPP trae PHP y MySQL. Todavía hace falta Git, Composer y Node.
+        </div>
+
+        <div class="indice">
+            <a href="#facil">A. Forma más fácil (carpeta lista, sin XAMPP)</a>
+            <a href="#xampp">B. Descargar e instalar XAMPP (PHP y MySQL)</a>
+            <a href="#comprobar">C. Comprobar si ya tiene los programas</a>
+            <a href="#programas">D. Descargar Git, Composer y Node</a>
+            <a href="#primera">E. Primera vez: bajar LegalCloud</a>
+            <a href="#encender">F. Encender la app</a>
+            <a href="#yaesta">G. Si ya está, solo encender</a>
+            <a href="#actualizar">H. Actualizar</a>
+            <a href="#cuentas">I. Cuentas</a>
+            <a href="#fallos">J. Si algo falla</a>
+        </div>
+
+        <h2 id="facil">A. Forma más fácil (carpeta lista, sin XAMPP)</h2>
+        <p>Si le pasaron <b>LegalCloud-listo</b>, no instale XAMPP. Copie la carpeta, doble clic en <b>INICIAR.bat</b>, entre con admin@legalcloud.com / password. No cierre la ventana negra.</p>
+        <p>Si no tiene esa carpeta, instale XAMPP y siga B → F.</p>
+
+        <h2 id="xampp">B. Descargar e instalar XAMPP (necesario para PHP y MySQL)</h2>
+        <p>XAMPP instala PHP y MySQL. Elija un XAMPP con <b>PHP 8.3 o 8.5</b>. El de PHP 8.2 no sirve para LegalCloud.</p>
+        <p>Descarga oficial: <a href="https://www.apachefriends.org/download.html">https://www.apachefriends.org/download.html</a></p>
+
+        <div class="paso">
+            <h3>B1. Abrir la página de XAMPP</h3>
+            <div class="cmd" data-cmd="start https://www.apachefriends.org/download.html"></div>
+        </div>
+        <div class="paso">
+            <h3>B2. O instalar XAMPP con winget (si aparece 8.2, después instale PHP 8.5 en el paso D)</h3>
+            <div class="cmd" data-cmd="winget install --id ApacheFriends.Xampp.8.2 -e --accept-package-agreements --accept-source-agreements"></div>
+        </div>
+        <ol class="pasos">
+            <li>Ejecute el instalador de XAMPP. Siguiente, siguiente. Destino: <code>C:\xampp</code>.</li>
+            <li>Abra <b>XAMPP Control Panel</b>.</li>
+            <li>Pulse <b>Start</b> en <b>Apache</b> (para phpMyAdmin).</li>
+            <li>Pulse <b>Start</b> en <b>MySQL</b>. Debe ponerse verde. Sin esto la app no guarda datos.</li>
+        </ol>
+        <div class="paso">
+            <h3>B3. Abrir el panel de XAMPP</h3>
+            <div class="cmd" data-cmd="start C:\xampp\xampp-control.exe"></div>
+        </div>
+        <div class="paso">
+            <h3>B4. Usar el PHP de XAMPP en esta ventana cmd</h3>
+            <p>Ejecute esto <b>cada vez</b> que abra cmd, o los comandos php/composer pueden fallar.</p>
+            <div class="cmd" data-cmd="set PATH=C:\xampp\php;C:\xampp\mysql\bin;%PATH%"></div>
+        </div>
+        <div class="paso">
+            <h3>B5. Comprobar el PHP de XAMPP</h3>
+            <div class="cmd" data-cmd="C:\xampp\php\php.exe -v"></div>
+        </div>
+        <div class="aviso">
+            Si sale PHP 8.2 o menos, LegalCloud no instala. Instale PHP 8.5 (paso D2) o use la carpeta LegalCloud-listo.
+        </div>
+        <div class="paso">
+            <h3>B6. Crear la base legalcloud</h3>
+            <div class="cmd" data-cmd='C:\xampp\mysql\bin\mysql.exe -u root -e "CREATE DATABASE IF NOT EXISTS legalcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"'></div>
+        </div>
+        <p>También puede abrir <a href="http://localhost/phpmyadmin">http://localhost/phpmyadmin</a> → Nueva → nombre <b>legalcloud</b> → utf8mb4_unicode_ci → Crear.</p>
+        <p>phpMyAdmin es XAMPP (puerto 80). LegalCloud se abre en <b>http://127.0.0.1:8000/app</b>, no en localhost sin :8000.</p>
+
+        <h2 id="comprobar">C. Comprobar si ya tiene los programas</h2>
+        <div class="paso"><h3>C1. Activar PHP de XAMPP</h3><div class="cmd" data-cmd="set PATH=C:\xampp\php;C:\xampp\mysql\bin;%PATH%"></div></div>
+        <div class="paso"><h3>C2. Git</h3><div class="cmd" data-cmd="git --version"></div></div>
+        <div class="paso"><h3>C3. PHP</h3><div class="cmd" data-cmd="php -v"></div></div>
+        <div class="paso"><h3>C4. Composer</h3><div class="cmd" data-cmd="composer -V"></div></div>
+        <div class="paso"><h3>C5. Node</h3><div class="cmd" data-cmd="node -v"></div></div>
+        <div class="paso"><h3>C6. npm</h3><div class="cmd" data-cmd="npm -v"></div></div>
+        <p>Si escribe solo git y sale “usage: git…”, Git ya está. PHP debe ser 8.3 o 8.5.</p>
+
+        <h2 id="programas">D. Descargar Git, Composer y Node (XAMPP no los trae)</h2>
+        <div class="paso">
+            <h3>D1. Git</h3>
+            <p>O baje: <a href="https://git-scm.com/download/win">https://git-scm.com/download/win</a></p>
+            <div class="cmd" data-cmd="winget install --id Git.Git -e --accept-package-agreements --accept-source-agreements"></div>
+        </div>
+        <div class="paso">
+            <h3>D2. PHP 8.5 (solo si XAMPP tiene PHP 8.2)</h3>
+            <div class="cmd" data-cmd="winget install --id PHP.PHP.8.5 -e --accept-package-agreements --accept-source-agreements"></div>
+        </div>
+        <div class="paso">
+            <h3>D3. Descargar Composer (no está en winget; PHP de XAMPP debe funcionar)</h3>
+            <p>Este comando sí funciona en cmd. Guarda el instalador en una carpeta fija. Si curl falla, abra este enlace y descargue a mano: <a href="https://getcomposer.org/Composer-Setup.exe">https://getcomposer.org/Composer-Setup.exe</a></p>
+            <div class="cmd" data-cmd="curl.exe -L https://getcomposer.org/Composer-Setup.exe -o C:\Users\Public\Composer-Setup.exe"></div>
+        </div>
+        <div class="paso">
+            <h3>D4. Abrir el instalador de Composer</h3>
+            <p>Se abre una ventana. En PHP elija <code>C:\xampp\php\php.exe</code>. Siguiente hasta Finish. Luego cierre cmd y abra otro.</p>
+            <div class="cmd" data-cmd="C:\Users\Public\Composer-Setup.exe"></div>
+        </div>
+        <div class="paso">
+            <h3>D4b. Si D3 no descarga, abra la web</h3>
+            <div class="cmd" data-cmd="start https://getcomposer.org/Composer-Setup.exe"></div>
+        </div>
+        <div class="paso">
+            <h3>D5. Node.js LTS</h3>
+            <p>O baje: <a href="https://nodejs.org">https://nodejs.org</a></p>
+            <div class="cmd" data-cmd="winget install --id OpenJS.NodeJS.LTS -e --accept-package-agreements --accept-source-agreements"></div>
+        </div>
+        <p>Cierre cmd, abra otro, ejecute otra vez el <b>set PATH</b> de B4 y compruebe C2–C6.</p>
+
+        <h2 id="primera">E. Primera vez: bajar LegalCloud</h2>
+        <p>MySQL de XAMPP debe estar en <b>Start</b> (verde).</p>
+        <div class="paso"><h3>E0. Activar PHP de XAMPP</h3><div class="cmd" data-cmd="set PATH=C:\xampp\php;C:\xampp\mysql\bin;%PATH%"></div></div>
+        <div class="paso"><h3>E1. Ir a C:\</h3><div class="cmd" data-cmd="cd /d C:\"></div></div>
+        <div class="paso"><h3>E2. Crear carpeta repo</h3><div class="cmd" data-cmd="if not exist repo mkdir repo"></div></div>
+        <div class="paso"><h3>E3. Entrar a repo</h3><div class="cmd" data-cmd="cd /d C:\repo"></div></div>
+        <div class="paso"><h3>E4. Descargar el proyecto</h3><div class="cmd" data-cmd="git clone https://github.com/ArontiDumpti/LegalCloudv1.git LegalCloud"></div></div>
+        <div class="paso"><h3>E5. Si el clone falla</h3><div class="cmd" data-cmd="git clone https://github.com/neutrosomar/LegalCloudv1.git LegalCloud"></div></div>
+        <div class="paso"><h3>E6. Entrar al proyecto</h3><div class="cmd" data-cmd="cd /d C:\repo\LegalCloud"></div></div>
+        <div class="paso"><h3>E7. Crear .env</h3><div class="cmd" data-cmd="copy .env.example .env"></div></div>
+        <div class="paso">
+            <h3>E8. Abrir .env y dejar la base de XAMPP</h3>
+            <div class="cmd" data-cmd="notepad .env"></div>
+            <p>Busque las líneas de DB_ y déjelas así. Guarde (Ctrl+S) y cierre.</p>
+            <div class="envbox">APP_URL=http://127.0.0.1:8000
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=legalcloud
+DB_USERNAME=root
+DB_PASSWORD=</div>
+            <p>Si root de XAMPP tiene clave, póngala en DB_PASSWORD.</p>
+        </div>
+        <p><b>E9. Librerías PHP.</b> Si <code>composer</code> no se reconoce, no use ese comando. Use estos dos (funcionan con el PHP de XAMPP):</p>
+        <div class="paso"><h3>E9a. Bajar Composer dentro del proyecto</h3><div class="cmd" data-cmd="curl.exe -L https://getcomposer.org/download/latest-stable/composer.phar -o composer.phar"></div></div>
+        <div class="paso"><h3>E9b. Instalar librerías PHP</h3><div class="cmd" data-cmd="C:\xampp\php\php.exe composer.phar install --no-interaction"></div></div>
+        <div class="paso"><h3>E9c. Si composer sí está instalado</h3><div class="cmd" data-cmd="composer install"></div></div>
+        <div class="paso"><h3>E10. Librerías de la pantalla</h3><div class="cmd" data-cmd="npm install"></div></div>
+        <div class="paso"><h3>E11. Clave de la app</h3><div class="cmd" data-cmd="php artisan key:generate"></div></div>
+        <div class="paso"><h3>E12. Crear tablas en MySQL de XAMPP</h3><div class="cmd" data-cmd="php artisan migrate"></div></div>
+        <div class="paso"><h3>E13. Cargar usuarios de demo</h3><div class="cmd" data-cmd="php artisan db:seed --class=LegalCloudSeeder"></div></div>
+        <div class="paso"><h3>E14. Enlace de archivos</h3><div class="cmd" data-cmd="php artisan storage:link"></div></div>
+        <div class="paso"><h3>E15. Armar la pantalla</h3><div class="cmd" data-cmd="npm run build"></div></div>
+
+        <h2 id="encender">F. Encender la app</h2>
+        <p>XAMPP: MySQL en Start. En cmd, otra vez el PATH. <b>No cierre</b> la ventana del serve.</p>
+        <div class="paso"><h3>F0</h3><div class="cmd" data-cmd="set PATH=C:\xampp\php;C:\xampp\mysql\bin;%PATH%"></div></div>
+        <div class="paso"><h3>F1</h3><div class="cmd" data-cmd="cd /d C:\repo\LegalCloud"></div></div>
+        <div class="paso"><h3>F2. Encender LegalCloud</h3><div class="cmd" data-cmd="php artisan serve --host=127.0.0.1 --port=8000"></div></div>
+        <div class="paso"><h3>F3. En OTRA ventana cmd</h3><div class="cmd" data-cmd="start http://127.0.0.1:8000/app"></div></div>
+        <p>App: <a href="http://127.0.0.1:8000/app">http://127.0.0.1:8000/app</a> — phpMyAdmin: <a href="http://localhost/phpmyadmin">http://localhost/phpmyadmin</a></p>
+
+        <h2 id="yaesta">G. Si ya está, solo encender</h2>
+        <ol class="pasos">
+            <li>XAMPP Control Panel → Start en MySQL.</li>
+        </ol>
+        <div class="paso"><h3>G1</h3><div class="cmd" data-cmd="set PATH=C:\xampp\php;C:\xampp\mysql\bin;%PATH%"></div></div>
+        <div class="paso"><h3>G2</h3><div class="cmd" data-cmd="cd /d C:\repo\LegalCloud"></div></div>
+        <div class="paso"><h3>G3</h3><div class="cmd" data-cmd="php artisan serve --host=127.0.0.1 --port=8000"></div></div>
+        <div class="paso"><h3>G4</h3><div class="cmd" data-cmd="start http://127.0.0.1:8000/app"></div></div>
+
+        <h2 id="actualizar">H. Actualizar</h2>
+        <div class="paso"><h3>H0</h3><div class="cmd" data-cmd="set PATH=C:\xampp\php;C:\xampp\mysql\bin;%PATH%"></div></div>
+        <div class="paso"><h3>H1</h3><div class="cmd" data-cmd="cd /d C:\repo\LegalCloud"></div></div>
+        <div class="paso"><h3>H2</h3><div class="cmd" data-cmd="git pull"></div></div>
+        <div class="paso"><h3>H3</h3><div class="cmd" data-cmd="composer install"></div></div>
+        <div class="paso"><h3>H4</h3><div class="cmd" data-cmd="npm install"></div></div>
+        <div class="paso"><h3>H5</h3><div class="cmd" data-cmd="php artisan migrate"></div></div>
+        <div class="paso"><h3>H6</h3><div class="cmd" data-cmd="npm run build"></div></div>
+        <div class="paso"><h3>H7</h3><div class="cmd" data-cmd="php artisan serve --host=127.0.0.1 --port=8000"></div></div>
+
+        <h2 id="cuentas">I. Cuentas (contraseña: password)</h2>
+        <table class="cuentas">
+            <tr><th>Correo</th><th>Rol</th></tr>
+            <tr><td>admin@legalcloud.com</td><td>Administradora</td></tr>
+            <tr><td>documental@legalcloud.com</td><td>Documentos</td></tr>
+            <tr><td>analista@legalcloud.com</td><td>Especialista</td></tr>
+            <tr><td>consultor@legalcloud.com</td><td>Consulta y puede subir PDF</td></tr>
+            <tr><td>williams@legalcloud.com</td><td>Administrador</td></tr>
+        </table>
+
+        <h2 id="fallos">J. Si algo falla</h2>
+        <ul>
+            <li>“No se reconoce”: use <b>cmd</b>, no PowerShell. O ejecute el set PATH de XAMPP (B4).</li>
+            <li>Error de base / SQLSTATE: XAMPP → Start en <b>MySQL</b>. Base llamada <b>legalcloud</b>.</li>
+            <li>php no se reconoce: use <code>C:\xampp\php\php.exe</code> o el set PATH.</li>
+            <li>Composer pide PHP 8.3: el PHP 8.2 de XAMPP viejo no sirve. Instale PHP 8.5 (D2) o LegalCloud-listo.</li>
+            <li>Composer no está en winget: use D3 y D4. En el instalador elija <code>C:\xampp\php\php.exe</code>.</li>
+            <li>“composer no se reconoce” o falta vendor/autoload.php: en C:\repo\LegalCloud use E9a y E9b (php composer.phar install). Luego otra vez key:generate, migrate y seed.</li>
+            <li>Página en blanco: npm run build.</li>
+            <li>ERR_CONNECTION_REFUSED: no está corriendo artisan serve.</li>
+            <li>localhost sin :8000 es XAMPP, no LegalCloud.</li>
+        </ul>
+        <p>Copie este HTML a la otra PC y ábralo con doble clic. No hace falta que LegalCloud esté instalado para ver la guía.</p>
+    </main>
+    <script>
+        const icono = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+        document.querySelectorAll(".cmd").forEach((caja) => {
+            const texto = caja.getAttribute("data-cmd") || "";
+            caja.innerHTML = "<code></code><button type='button'>" + icono + " Copiar</button>";
+            caja.querySelector("code").textContent = texto;
+            caja.querySelector("button").addEventListener("click", async () => {
+                try { await navigator.clipboard.writeText(texto); }
+                catch {
+                    const campo = document.createElement("textarea");
+                    campo.value = texto;
+                    document.body.appendChild(campo);
+                    campo.select();
+                    document.execCommand("copy");
+                    campo.remove();
+                }
+                const boton = caja.querySelector("button");
+                boton.classList.add("ok");
+                boton.innerHTML = icono + " Copiado";
+                setTimeout(() => { boton.classList.remove("ok"); boton.innerHTML = icono + " Copiar"; }, 1600);
+            });
+        });
+    </script>
+</body>
+</html>

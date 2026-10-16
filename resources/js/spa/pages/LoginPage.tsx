@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { api, guardarTokens } from '../api';
+import { CampoContrasena } from '../ui';
 import type { Token } from '../types';
 
 export default function LoginPage({
@@ -115,28 +116,22 @@ export default function LoginPage({
 
                     <label className="mt-4 grid gap-2 text-sm font-medium">
                         Contraseña
-                        <input
-                            className="h-11 rounded-lg border border-mist px-3 font-normal"
-                            type="password"
+                        <CampoContrasena
+                            valor={contrasena}
+                            onCambio={setContrasena}
                             autoComplete={modo === 'crear' ? 'new-password' : 'current-password'}
                             minLength={8}
-                            value={contrasena}
-                            onChange={(e) => setContrasena(e.target.value)}
-                            required
                         />
                     </label>
 
                     {modo === 'crear' && (
                         <label className="mt-4 grid gap-2 text-sm font-medium">
                             Confirmación de contraseña
-                            <input
-                                className="h-11 rounded-lg border border-mist px-3 font-normal"
-                                type="password"
+                            <CampoContrasena
+                                valor={contrasenaConfirmacion}
+                                onCambio={setContrasenaConfirmacion}
                                 autoComplete="new-password"
                                 minLength={8}
-                                value={contrasenaConfirmacion}
-                                onChange={(e) => setContrasenaConfirmacion(e.target.value)}
-                                required
                             />
                         </label>
                     )}
